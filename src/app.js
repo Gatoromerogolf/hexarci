@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const cors = require('cors');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const path = require('path');
 // const expressLayouts = require('express-ejs-layouts');
 
@@ -63,7 +63,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Middleware para habilitar CORS y logging::::::::::::::::::::::
 app.use(cors());
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 
 
 // Middleware para servir archivos estáticos:::::::::::::::

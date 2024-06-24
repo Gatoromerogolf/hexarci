@@ -1,6 +1,6 @@
 body {
     font-family: 'Roboto', Arial, sans-serif;
-    background-image: url('../img/reuniones.png'); /*../estilos/estiloMenuGeneral.css*/
+    background-image: url('reuniones.png'); /*../estilos/estiloMenuGeneral.css*/
     background-size: cover; /* Asegura que la imagen cubra toda la pantalla */
     background-position: center; /* Centra la imagen */
     background-attachment: fixed; /* Mantiene la imagen fija al hacer scroll */
@@ -8,6 +8,44 @@ body {
     padding: 0;
     background-attachment: fixed;
 }
+
+
+body.corporativo {
+  background: url('background.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase aperie */
+body.aperie {
+  background: url('background-aperie.jpg') no-repeat center bottom fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase procesos */
+body.procesos {
+  background: url('background-procesos.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase mercado */
+body.mercado {
+  background: url('background mercado.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase fiananciero */
+body.financiero {
+  background: url('background financiero.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase calidad */
+body.calidad {
+  background: url('background calidad.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+
 
 /* Fondo específico para la clase fiananciero */
 body.financiero {

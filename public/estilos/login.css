@@ -10,7 +10,9 @@ body{
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color:#528FD5;
+  /*background-color:#528FD5;*/
+  background: url('background.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
 
 /*display: flex;
@@ -31,8 +33,10 @@ form{
   display: flex;
   flex-direction: column;
   background:#e6e6e6;
+  background: darkgray;
   text-align: center;
   padding: 20px 25px;
+  border-radius: 15px;
 }
 
 form .title{
@@ -47,7 +51,7 @@ form label{
 
 form label .fa-solid{
   font-size: 20px;
-  color:rgb(212, 212, 221);
+  color: black;
   margin-right: 10px;
 }
 
