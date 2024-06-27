@@ -186,7 +186,7 @@ async function grabarResultados(respuestas) {
   const cuit = "20114512894"; // Puedes obtener estos valores dinámicamente 
   const usuario = "ruben";
   const capitulo = "A";
-  const datos = valores;
+  const datos = 15;
 
   const body = { 
     cuit, 
@@ -201,8 +201,7 @@ async function grabarResultados(respuestas) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body),
-      credentials: "include"
+      body: JSON.stringify(body)
     });
 
     const result = await response.json();

@@ -182,27 +182,13 @@ function continuar() {
 
 async function grabarResultados(respuestas) {
   alert("entro en grabar resultados");
-
-  const cuit = "20114512894"; // Puedes obtener estos valores dinámicamente 
-  const usuario = "ruben";
-  const capitulo = "A";
-  const datos = valores;
-
-  const body = { 
-    cuit, 
-    usuario, 
-    capitulo, 
-    datos
-  };
-
   try {
-    const response = await fetch('http://localhost:3000/insertar', {
+    const response = await fetch('/insertar', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body),
-      credentials: "include"
+      body: JSON.stringify({ respuestas })
     });
 
     const result = await response.json();
@@ -217,6 +203,41 @@ async function grabarResultados(respuestas) {
     throw error; // Rechaza la promesa en caso de error
   }
 }
+
+// function grabarResultados(respuestas){
+//   alert("entro en grabar resultados")
+//    return new Promise((resolve, reject) => {
+//      console.log(`resultados a grabar ${respuestas}`)
+//      alert("muestra consola")
+
+//     const nuevoResultado =
+//     'INSERT INTO a15 (clave, cuit, usuario, capitulo, pregunta, datos, puntaje, porciento) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)' ;
+    
+//     const datosAPasar =["20114512894", "ruben", "A", 15, respuestas, valores, porcientoFormateado];
+
+//     alert("armo el insert")
+
+//     const conexion = require('../src/app.js');
+
+//   conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
+//     if (error) {
+//       console.log('Error:', error);
+//       alert("estamos en el error" + error.message);
+//       reject(error); // Rechaza la promesa en caso de error
+//     } else {
+//       console.log(lista.insertId, lista.fieldCount);
+//       alert("no hay error");
+//       resolve(); // resuelve la promesa cuando la consulta termina sin errores
+//     }
+//     });
+//   });
+// }
+
+
+
+
+
+
 
 
 // Armar velocimetro ::::::::::::::::::::::::::::::::::::::
