@@ -205,6 +205,40 @@ h1, h2, h3 {
   line-height: 0.7;
 }
 
+.chart-container {
+  position: relative;
+  height: 600px;
+  width: 700px;
+  border-style:groove; 
+}
+
+.alerta-contenido-chart {
+  position: relative;
+  width: 1000px;
+  margin: 5% auto;
+  padding: 10px;
+  background: white;
+  border-radius: 5px;
+  font-family:'Roboto', sans-serif;
+}
+
+.alerta-cabecera-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  text-align: center;
+  font-size: 20px; /* Tamaño de la fuente */
+  font-weight: bold; /* Negrita */
+}
+
+.alerta-cuerpo-chart {
+  margin: 0;
+  font-size: 16px; /* Tamaño de la fuente */
+  text-align: center;
+}
+
+
 
 #continuar{
   background-color: #4CAF50; /* Color de fondo */

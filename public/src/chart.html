@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Barras Horizontales</title>
+    <!-- <link rel="stylesheet" href="../estilos/chart.css"> -->
+    <link rel="stylesheet" href="../estilos/estiloEncuestas.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+</head>
+<body>
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+
+
+    <div id="miAlerta" >
+        <div class="alerta-contenido-chart">
+          <div class="alerta-cabecera-chart">
+            <span>Resumen de la sección</span>
+            <!-- <button type="button" onclick="cerrarAlerta()">Cerrar</button> -->
+          </div>
+          <div class="alerta-cuerpo-chart">
+            <p>Puntaje máximo posible: <span id="maximo"></span></p>
+  
+            <div class="chart-container">
+                <canvas id="myChart"></canvas>
+            </div>
+    
+            <button id="continuar" onclick="continuar()">Continuar</button>
+          </div>
+        </div>
+      </div>
+
+
+</body>
+    <!-- <script src="../../js/chart.js"></script> -->
+     <script src="../../public/js/chart.js"></script>
+</html>
