@@ -52,20 +52,23 @@ function calculaResultados() {
          respuestas: ${respuestas[i]}`);
 
     switch (respuestas[i]) {
-      case "1": valores +=0;
-              break;
-      case "2": valores +=(0.50 * 10);
-              console.log (`caso 2 ${valores}`)
-              break;
-      case "3": valores +=(0.75 * 10);
-              console.log (`caso 3 ${valores}`)
-              break;
-      case "4": valores +=10;
-              console.log (`caso 4 ${valores}`)
-              break;
+      case "1":
+        valores += 0;
+        break;
+      case "2":
+        valores += 0.5 * 10;
+        console.log(`caso 2 ${valores}`);
+        break;
+      case "3":
+        valores += 0.75 * 10;
+        console.log(`caso 3 ${valores}`);
+        break;
+      case "4":
+        valores += 10;
+        console.log(`caso 4 ${valores}`);
+        break;
     }
     console.log(`valor despues calculo: ${valores}`);
-
   }
   const porcientoFormateado = ((valores / maximo) * 100).toFixed(2);
   return porcientoFormateado;
@@ -74,17 +77,17 @@ function calculaResultados() {
 // PROCESO PRINCIPAL ::::::::::::::::::::::::::::::::::::::::::
 
 document
-// Captura del formulario :::::::::::::::::::::::::::::::::::::
+  // Captura del formulario :::::::::::::::::::::::::::::::::::::
   .getElementById("formulario")
   .addEventListener("submit", function (event) {
     valores = 0;
     event.preventDefault(); // Prevenir el envío del formulario
 
-// obtener los valores de radio ::::::::::::::::::::::::::::::
+    // obtener los valores de radio ::::::::::::::::::::::::::::::
     obtenerValoresSeleccionados();
     console.log(`indice de respuestas faltantes ${filasFaltantes}`);
 
-// Si no hay faltantes sigue adelante:::::::::::::::::::::::::
+    // Si no hay faltantes sigue adelante:::::::::::::::::::::::::
     if (!(filasFaltantes.length > 0)) {
       porcientoFormateado = calculaResultados();
       porcientoFormateado = ((valores / maximo) * 100).toFixed(2);
@@ -126,29 +129,28 @@ function limpiarSelecciones() {
 // :::::::::::::::::::::::
 
 function mostrarMiAlerta(maximo, valores, porcientoFormateado) {
-
   // Mostrar la alerta personalizada
-  document.getElementById('miAlerta').style.display = 'block';
+  document.getElementById("miAlerta").style.display = "block";
 
   //  crea el gauge despues de mostrar la alerta
-  const target = document.getElementById('gaugeChart'); // your canvas element
+  const target = document.getElementById("gaugeChart"); // your canvas element
   const gauge = new Gauge(target).setOptions(opts); // create gauge!
   gauge.maxValue = 100; // set max gauge value
-  gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+  gauge.setMinValue(0); // Prefer setter over gauge.minValue = 0
   gauge.animationSpeed = 32; // set animation speed (32 is default value)
   gauge.set(porcientoFormateado); // set actual value
 
   // Actualizar los contenidos
-  document.getElementById('maximo').textContent = maximo;
-  document.getElementById('calificacion').textContent = valores;
-  document.getElementById('porcentual').innerHTML = '<strong>' + porcientoFormateado + '%<strong>';
-
+  document.getElementById("maximo").textContent = maximo;
+  document.getElementById("calificacion").textContent = valores;
+  document.getElementById("porcentual").innerHTML =
+    "<strong>" + porcientoFormateado + "%<strong>";
 }
 
 // ::::::::::::::::::::::::
 
 function cerrarAlerta() {
-  alert("entro en cerrarAlerta")
+  alert("entro en cerrarAlerta");
   document.getElementById("miAlerta").style.display = "none";
 }
 
@@ -168,52 +170,102 @@ function cerrarAlerta() {
 // }
 
 function continuar() {
-  cerrarAlerta();  // Opcional, depende de si quieres cerrar la alerta antes de cambiar la página
+  cerrarAlerta(); // Opcional, depende de si quieres cerrar la alerta antes de cambiar la página
   alert("entro en continuar");
 
-  grabarResultados(respuestas).then(() => {
-    alert("ahora llama al menu-a");
-    window.location.href = (JSON.parse(localStorage.getItem('idioma'))) == 1 ? "Menu-A.html" : "Menu-A-en.html";
-  }).catch((error) => {
-    console.error('Error en grabarResultados:', error);
-    alert("Hubo un error al grabar los resultados: " + error.message);
-  });
+  grabarResultados2(respuestas)
+    .then(() => {
+      alert("ahora llama al menu-a");
+      window.location.href =
+        JSON.parse(localStorage.getItem("idioma")) == 1
+          ? "Menu-A.html"
+          : "Menu-A-en.html";
+    })
+    .catch((error) => {
+      console.error("Error en grabarResultados:", error);
+      alert("Hubo un error al grabar los resultados: " + error.message);
+    });
 }
 
 async function grabarResultados(respuestas) {
   alert("entro en grabar resultados");
 
-  const cuit = "20114512894"; // Puedes obtener estos valores dinámicamente 
+  const cuit = "20114512894"; // Puedes obtener estos valores dinámicamente
   const usuario = "ruben";
   const capitulo = "A";
   const datos = valores;
 
-  const body = { 
-    cuit, 
-    usuario, 
-    capitulo, 
-    datos
+  const body = {
+    cuit,
+    usuario,
+    capitulo,
+    datos,
   };
 
   try {
-    const response = await fetch('http://localhost:3000/insertar', {
-      method: 'POST',
+    const response = await fetch("http://localhost:3000/insertar", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-      credentials: "include"
+      credentials: "include",
     });
 
     const result = await response.json();
     if (result.success) {
       alert("no hay error");
     } else {
-      throw new Error(result.error || 'Error desconocido');
+      throw new Error(result.error || "Error desconocido");
     }
   } catch (error) {
-    console.log('Error:', error);
+    console.log("Error:", error);
     alert("estamos en el error: " + error.message);
+    throw error; // Rechaza la promesa en caso de error
+  }
+}
+
+// grabacion mas completa
+
+async function grabarResultados2(respuestas) {
+  alert("entro en grabar resultados");
+
+  const CUIT = "20114512894"; // Puedes obtener estos valores dinámicamente
+  // const usuario = "ruben";
+  const perfil = 1;
+  const capitulo = "A";
+  const seccion = 15;
+  const numero = valores;
+  const respuesta = respuestas;
+
+  const body = {
+    CUIT,
+    perfil,
+    capitulo,
+    seccion,
+    numero,
+    respuesta
+  };
+
+  try {
+    const response = await fetch("http://localhost:3000/insertar2", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      credentials: "include",
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert("no hay error");
+    } else {
+      throw new Error(result.error || "Error desconocido ins 2");
+    }
+  } catch (error) {
+    console.log("Error:", error);
+    alert("estamos en el error (ins 2): " + error.message);
     throw error; // Rechaza la promesa en caso de error
   }
 }
@@ -222,34 +274,34 @@ async function grabarResultados(respuestas) {
 // Armar velocimetro ::::::::::::::::::::::::::::::::::::::
 const opts = {
   angle: -0.3,
-// The span of the gauge arc
+  // The span of the gauge arc
   lineWidth: 0.2, // The line thickness
   radiusScale: 0.8, // Relative radius
   pointer: {
-      length: 0.6, // // Relative to gauge radius
-      strokeWidth: 0.035, // The thickness
-      color: '#000000' // Fill color
+    length: 0.6, // // Relative to gauge radius
+    strokeWidth: 0.035, // The thickness
+    color: "#000000", // Fill color
   },
-  limitMax: false,     // If false, max value increases automatically if value > maxValue
-  limitMin: false,     // If true, the min value of the gauge will be fixed
-  colorStart: '#6F6EA0',   // Colors
-  colorStop: '#C0C0DB',    // just experiment with them
-  strokeColor: '#EEEEEE',  // to see which ones work best for you
+  limitMax: false, // If false, max value increases automatically if value > maxValue
+  limitMin: false, // If true, the min value of the gauge will be fixed
+  colorStart: "#6F6EA0", // Colors
+  colorStop: "#C0C0DB", // just experiment with them
+  strokeColor: "#EEEEEE", // to see which ones work best for you
   generateGradient: true,
-  highDpiSupport: true,     // High resolution support
+  highDpiSupport: true, // High resolution support
 
   // Custom segment colors
   staticZones: [
-     {strokeStyle: "red", min: 0, max: 50}, // Red from 0 to 25
-     {strokeStyle: "orange", min: 50, max: 70}, // Red from 0 to 25
-     {strokeStyle: "green", min: 70, max: 90}, // Yellow from 50 to 75
-     {strokeStyle: "blue", min: 90, max: 100}  // Blue from 75 to 100
+    { strokeStyle: "red", min: 0, max: 50 }, // Red from 0 to 25
+    { strokeStyle: "orange", min: 50, max: 70 }, // Red from 0 to 25
+    { strokeStyle: "green", min: 70, max: 90 }, // Yellow from 50 to 75
+    { strokeStyle: "blue", min: 90, max: 100 }, // Blue from 75 to 100
   ],
 
   staticLabels: {
-      font: "15px sans-serif",  // Specifies font
-      labels: [0, 50, 70, 90, 100],  // Print labels at these values
-      color: "#000000",  // Optional: Label text color
-      fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+    font: "15px sans-serif", // Specifies font
+    labels: [0, 50, 70, 90, 100], // Print labels at these values
+    color: "#000000", // Optional: Label text color
+    fractionDigits: 0, // Optional: Numerical precision. 0=round off.
   },
 };

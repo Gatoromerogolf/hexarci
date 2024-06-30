@@ -70,7 +70,7 @@ app.use(cors());
 
 // Configurar sesiones
 app.use(session({
-    secret: 'tu_secreto', // Cambia esto por un valor seguro
+    secret: 'Flam822', // Cambia esto por un valor seguro
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Debe ser true en producción si usas HTTPS

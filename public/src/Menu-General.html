@@ -32,7 +32,8 @@
               </a>
             </div>
           </div>
-          
+
+            <h1>Bienvenido, <span id="username"></span>!</h1>
           <h3>Compañía: 'Nombre de la compañía'</h3>
           <!-- <h3>Autoevaluación. Capítulos.</h3> -->
 
@@ -73,6 +74,19 @@
       localStorage.setItem('idioma', '2');
     });
   </script>
+
+<script>
+  // Obtener el nombre del usuario de localStorage
+  const username = localStorage.getItem('username');
+  
+  // Mostrar el nombre del usuario en el elemento con id "username"
+  if (username) {
+      document.getElementById('username').textContent = username;
+  } else {
+      // Si no hay un usuario en localStorage, redirigir a la página de login
+      window.location.href = '../login.html';
+  }
+</script>
 
 <script src="../../js/menu-General.js"></script>
 

@@ -54,7 +54,7 @@ app.post('/insertar', (req, res) => {
 
     const { cuit, capitulo, datos } = req.body;
     const usuario = req.session.user.username; // Obtener el usuario de la sesión
-    
+
     const nuevoResultado = 'INSERT INTO a15 (clave, cuit, usuario, capitulo, datos) VALUES (NULL, ?, ?, ?, ?)';
     const datosAPasar = [cuit, usuario, capitulo, datos];
 
@@ -68,6 +68,65 @@ app.post('/insertar', (req, res) => {
         }
     });
 });
+
+// Inserción de registros en MySQL opcion 2
+app.post('/insertar2', (req, res) => {
+    if (!req.session.user){
+        return res.status(401).json({ error: 'No estás autenticado' });
+    }
+
+    const { CUIT, perfil, capitulo, seccion, numero, respuesta } = req.body;
+    const usuario = req.session.user.username; // Obtener el usuario de la sesión
+
+    // Convertir el array de respuesta a un string JSON
+    const respuestaJSON = JSON.stringify(respuesta);   
+
+    console.log('Datos recibidos:', { CUIT, usuario, perfil, capitulo, seccion, numero, respuesta });
+
+    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, perfil, capitulo, seccion, numero, respuesta) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const datosAPasar = [CUIT, usuario, perfil, capitulo, seccion, numero, respuestaJSON];
+
+    conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
+        if (error) {
+            if (error.code === 'ER_DUP_ENTRY') {
+                // Manejar el error de duplicación
+                res.status(409).json({ error: 'Ya existe una respuesta para esta combinación de capitulo y seccion' });
+            } else {
+            console.log('Error:', error);
+            res.status(500).json({ error: error.message });
+        }
+        } else {
+            console.log(lista.insertId, lista.fieldCount);
+            res.status(200).json({ success: true });
+        }
+    });
+});
+
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  PARA RECUPERAR DATOS JSON DE MYSQL
+
+app.get('/obtenerRespuestas', (req, res) => {
+    const consulta = 'SELECT * FROM respuestas WHERE id = ?';
+    const id = req.query.id; // Asumiendo que el ID es pasado como parámetro de consulta
+
+    conexion.query(consulta, [id], function (error, resultados) {
+        if (error) {
+            console.log('Error:', error);
+            res.status(500).json({ error: error.message });
+        } else {
+            if (resultados.length > 0) {
+                const resultado = resultados[0];
+                // Parsear el campo respuesta de JSON a un objeto o array
+                resultado.respuesta = JSON.parse(resultado.respuesta);
+                res.status(200).json(resultado);
+            } else {
+                res.status(404).json({ error: 'Registro no encontrado' });
+            }
+        }
+    });
+});
+
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 // Rutas de la API
 app.use('/api', routes);
@@ -85,6 +144,8 @@ app.get('/login', (req, res) => {
 // Endpoint para validar credenciales
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
+
+    // Verificar las credenciales del usuario
     conexion.query('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, results) => {
         if (err) {
             res.status(500).send('Error en la base de datos');

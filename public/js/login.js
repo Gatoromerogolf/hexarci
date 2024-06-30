@@ -14,6 +14,8 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     })
     .then(response => {
         if (response.ok) {
+            // Guardar el nombre de usuario en localStorage
+            localStorage.setItem('username', username);
             // Login exitoso, redirige a presentacion.html
             window.location.href = '../src/presentacion.html';
         } else {

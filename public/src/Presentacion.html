@@ -35,7 +35,10 @@
         </div>
       </div>
 
-      <h2>Introducción.</h2>
+
+    <h2>Bienvenido, <span id="username"></span>!</h2>
+
+      <h1>Introducción.</h1>
       <p>Esta evaluación está dividida en los siguientes capítulos:</p>
 
       <ol class="dos-columnas">
@@ -92,6 +95,19 @@
     // Setea una variable en el localStorage con valor 1 cuando se hace clic en el ícono de USA
     localStorage.setItem('idioma', '2');
   });
+</script>
+
+<script>
+  // Obtener el nombre del usuario de localStorage
+  const username = localStorage.getItem('username');
+  
+  // Mostrar el nombre del usuario en el elemento con id "username"
+  if (username) {
+      document.getElementById('username').textContent = username;
+  } else {
+      // Si no hay un usuario en localStorage, redirigir a la página de login
+      window.location.href = '../login.html';
+  }
 </script>
 
 <!-- <script src="../../js/menu-General.js"></script> -->
