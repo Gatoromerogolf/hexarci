@@ -12,10 +12,16 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         },
         body: JSON.stringify({ username, password })
     })
-    .then(response => {
-        if (response.ok) {
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Login exitoso') {
             // Guardar el nombre de usuario en localStorage
             localStorage.setItem('username', username);
+            
+            // Guardar el nombre y apellido en localStorage
+            localStorage.setItem('nombre', data.user.firstName);
+            localStorage.setItem('apellido', data.user.lastName);
+
             // Login exitoso, redirige a presentacion.html
             window.location.href = '../src/presentacion.html';
         } else {

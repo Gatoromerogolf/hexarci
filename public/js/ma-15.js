@@ -305,3 +305,22 @@ const opts = {
     fractionDigits: 0, // Optional: Numerical precision. 0=round off.
   },
 };
+
+
+// //
+// let respuestas = [1, 2, 3, 4, 5]; // Ejemplo de arreglo de respuestas
+// let checklistValues = [6, 7, 8]; // Ejemplo de arreglo de valores de checklist
+// let j = 2; // Posición en la que quieres insertar el arreglo checklistValues
+
+// Usar splice para insertar checklistValues como un subarreglo en la posición j
+// respuestas.splice(j, 0, checklistValues);
+
+// console.log(respuestas); // Salida: [1, 2, [6, 7, 8], 3, 4, 5]
+// console.log(respuestas[0]); // Salida: 1
+// console.log(respuestas[2]); // Salida: [6, 7, 8]
+
+
+// let respuestas = [1, 2, [6, 7, 8], 3, 4, 5];
+// let numeroSiete = respuestas[2][1]; // Accede al subarreglo en la posición 2, y luego al elemento en la posición 1 dentro de ese subarreglo
+// console.log(numeroSiete); // Salida: 7
+

@@ -99,7 +99,7 @@
 
 <script>
   // Obtener el nombre del usuario de localStorage
-  const username = localStorage.getItem('username');
+  const username = localStorage.getItem('nombre') + " " + localStorage.getItem('apellido')
   
   // Mostrar el nombre del usuario en el elemento con id "username"
   if (username) {

@@ -150,8 +150,10 @@ app.post('/api/login', (req, res) => {
         if (err) {
             res.status(500).send('Error en la base de datos');
         } else if (results.length > 0) {
-            req.session.user = results[0]; // Guarda el usuario en la sesión
-            res.status(200).send('Login exitoso');
+            const user = results[0]; // Accede a la primera fila de los resultados
+            req.session.user = username; // Guarda el usuario en la sesión
+            // res.status(200).send('Login exitoso');
+            res.status(200).json({ message: 'Login exitoso', user: { firstName: user.Nombre, lastName: user.Apellido } }); 
         } else {
             res.status(401).send('Credenciales inválidas');
         }
