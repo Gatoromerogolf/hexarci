@@ -230,20 +230,18 @@ async function grabarResultados(respuestas) {
 async function grabarResultados2(respuestas) {
   alert("entro en grabar resultados");
 
-  const CUIT = "20114512894"; // Puedes obtener estos valores dinámicamente
+  //const CUIT = "20999999994"; // Puedes obtener estos valores dinámicamente
   // const usuario = "ruben";
-  const perfil = 1;
   const capitulo = "A";
   const seccion = 15;
-  const numero = valores;
+  const score = valores;
   const respuesta = respuestas;
 
   const body = {
-    CUIT,
-    perfil,
+    //CUIT,
     capitulo,
     seccion,
-    numero,
+    score,
     respuesta
   };
 

@@ -10,14 +10,14 @@ const routes = require('./routes/index');
 
 const app = express();
 
-// Middleware para parsear el cuerpo de las solicitudes
+// Middleware para parsear el cuerpo de las solicitudes::::::::::::::::::::
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Middleware para habilitar CORS
+// Middleware para habilitar CORS ::::::::::::::::::::::::::::::::::::::::
 app.use(cors());
 
-// Configurar sesiones
+// Configurar sesiones ::::::::::::::::::::::::::::::::::::::::::::::::::
 app.use(session({
     secret: 'Flam822', // Cambia esto por un valor seguro
     resave: false,
@@ -26,10 +26,10 @@ app.use(session({
 }));
 
 
-// Middleware para servir archivos estáticos
+// Middleware para servir archivos estáticos::::::::::::::::::::::::::::::
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Conexión a la base de datos
+// Conexión a la base de datos::::::::::::::::::::::::::::::::::::::::::::::
 const conexion = mysql.createConnection({
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
@@ -46,17 +46,17 @@ conexion.connect(function (err) {
     }
 });
 
-// Inserción de registros en MySQL
+// Inserción de registros en MySQL ::::::::::::::::::::::::::::::::::::::::::
 app.post('/insertar', (req, res) => {
     if (!req.session.user){
         return res.status(401).json({ error: 'No estás autenticado' });
     }
 
-    const { cuit, capitulo, datos } = req.body;
+    const { CUIT, capitulo, datos } = req.body;
     const usuario = req.session.user.username; // Obtener el usuario de la sesión
 
-    const nuevoResultado = 'INSERT INTO a15 (clave, cuit, usuario, capitulo, datos) VALUES (NULL, ?, ?, ?, ?)';
-    const datosAPasar = [cuit, usuario, capitulo, datos];
+    const nuevoResultado = 'INSERT INTO a15 (clave, CUIT, usuario, capitulo, datos) VALUES (NULL, ?, ?, ?, ?)';
+    const datosAPasar = [CUIT, usuario, capitulo, datos];
 
     conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
         if (error) {
@@ -69,22 +69,29 @@ app.post('/insertar', (req, res) => {
     });
 });
 
-// Inserción de registros en MySQL opcion 2
+// Inserción de registros en MySQL opcion 2 :::::::::::::::::::::::::::::::::::::
 app.post('/insertar2', (req, res) => {
     if (!req.session.user){
         return res.status(401).json({ error: 'No estás autenticado' });
     }
 
-    const { CUIT, perfil, capitulo, seccion, numero, respuesta } = req.body;
+    console.log ("llego y paso el req session")
+
+    const { capitulo, seccion, score, respuesta } = req.body;
     const usuario = req.session.user.username; // Obtener el usuario de la sesión
+    const CUIT = req.session.user.CUIT;
+
+    if (!usuario) {
+        return res.status(400).json({ error: 'Usuario no definido en la sesión' });
+    }
 
     // Convertir el array de respuesta a un string JSON
     const respuestaJSON = JSON.stringify(respuesta);   
 
-    console.log('Datos recibidos:', { CUIT, usuario, perfil, capitulo, seccion, numero, respuesta });
+    console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, score, respuesta });
 
-    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, perfil, capitulo, seccion, numero, respuesta) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    const datosAPasar = [CUIT, usuario, perfil, capitulo, seccion, numero, respuestaJSON];
+    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, score, respuesta) VALUES (?, ?, ?, ?, ?, ?)';
+    const datosAPasar = [CUIT, usuario, capitulo, seccion, score, respuestaJSON];
 
     conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
         if (error) {
@@ -102,7 +109,7 @@ app.post('/insertar2', (req, res) => {
     });
 });
 
-//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  PARA RECUPERAR DATOS JSON DE MYSQL
 
 app.get('/obtenerRespuestas', (req, res) => {
@@ -141,7 +148,7 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/login.html'));
 });
 
-// Endpoint para validar credenciales
+// Endpoint para validar credenciales :::::::::::::::::::::::::::::::::::::::::::::::::::
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -151,9 +158,9 @@ app.post('/api/login', (req, res) => {
             res.status(500).send('Error en la base de datos');
         } else if (results.length > 0) {
             const user = results[0]; // Accede a la primera fila de los resultados
-            req.session.user = username; // Guarda el usuario en la sesión
+            req.session.user = { username: user.username, firstName: user.Nombre, lastName: user.Apellido , CUIT: user.CUIT}; // Guarda el usuario como un objeto en la sesión
             // res.status(200).send('Login exitoso');
-            res.status(200).json({ message: 'Login exitoso', user: { firstName: user.Nombre, lastName: user.Apellido } }); 
+            res.status(200).json({ message: 'Login exitoso', user: { firstName: user.Nombre, lastName: user.Apellido, CUIT: user.CUIT } }); 
         } else {
             res.status(401).send('Credenciales inválidas');
         }

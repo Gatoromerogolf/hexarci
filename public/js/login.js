@@ -30,6 +30,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         }
     })
     .catch(error => {
+        alert("usuario o clave invalidos");
         console.error('Error en la solicitud:', error);
     });
 });
