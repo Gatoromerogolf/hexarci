@@ -167,7 +167,7 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// Ruta protegida que requiere autenticación
+// Ruta protegida que requiere autenticación :::::::::::::::::::::::::::::::::::::::::.
 app.get('/protected', (req, res) => {
     if (req.session.user) {
         res.status(200).send(`Bienvenido ${req.session.user.username}`);
@@ -176,12 +176,12 @@ app.get('/protected', (req, res) => {
     }
 });
 
-// Captura todas las otras rutas para mostrar un 404
+// Captura todas las otras rutas para mostrar un 404 :::::::::::::::::::::::::::::::::
 app.get('*', (req, res) => {
     res.status(404).send('Page Not Found');
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; :::::::::::::::::::::::::::::::::::::::::::::::
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
