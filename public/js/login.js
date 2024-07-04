@@ -21,7 +21,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             // Guardar el nombre y apellido en localStorage
             localStorage.setItem('nombre', data.user.firstName);
             localStorage.setItem('apellido', data.user.lastName);
-
+            localStorage.setItem('CUIT', data.user.CUIT);
             // Login exitoso, redirige a presentacion.html
             window.location.href = '../src/presentacion.html';
         } else {

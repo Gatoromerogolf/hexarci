@@ -113,18 +113,23 @@ app.post('/insertar2', (req, res) => {
 //  PARA RECUPERAR DATOS JSON DE MYSQL
 
 app.get('/obtenerRespuestas', (req, res) => {
-    const consulta = 'SELECT * FROM respuestas WHERE id = ?';
-    const id = req.query.id; // Asumiendo que el ID es pasado como parámetro de consulta
+    const consulta = 'SELECT * FROM respuestas WHERE id = 5';
 
-    conexion.query(consulta, [id], function (error, resultados) {
+    conexion.query(consulta, function (error, resultados) {
         if (error) {
             console.log('Error:', error);
             res.status(500).json({ error: error.message });
         } else {
             if (resultados.length > 0) {
                 const resultado = resultados[0];
-                // Parsear el campo respuesta de JSON a un objeto o array
-                resultado.respuesta = JSON.parse(resultado.respuesta);
+                try {
+                    // Verificar si el campo `respuesta` es una cadena JSON válida
+                    resultado.respuesta = JSON.parse(resultado.respuesta);
+                } catch (e) {
+                    console.log('Error al parsear JSON:', e);
+                    res.status(500).json({ error: 'Error al parsear el campo respuesta' });
+                    return;
+                }
                 res.status(200).json(resultado);
             } else {
                 res.status(404).json({ error: 'Registro no encontrado' });
@@ -132,6 +137,7 @@ app.get('/obtenerRespuestas', (req, res) => {
         }
     });
 });
+
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -167,6 +173,15 @@ app.post('/api/login', (req, res) => {
     });
 });
 
+/*Explicación:
+Inicio de sesión: Envías una solicitud de inicio de sesión al backend con las credenciales del usuario.
+Respuesta del servidor: El servidor responde con un objeto JSON que contiene un mensaje y un objeto user que incluye firstName, lastName y CUIT.
+Acceso a CUIT: En el frontend, puedes acceder a CUIT utilizando user.CUIT una vez que hayas recibido y procesado la respuesta.
+De esta manera, puedes utilizar el CUIT en cualquier parte del frontend después de que el usuario haya iniciado sesión correctamente. Si necesitas mantener el estado de inicio de sesión y los datos del usuario entre diferentes páginas o sesiones, podrías considerar almacenar esta información en localStorage, sessionStorage, o en el estado de tu aplicación si estás usando una librería como React, Vue, etc.
+
+*/
+
+
 // Ruta protegida que requiere autenticación :::::::::::::::::::::::::::::::::::::::::.
 app.get('/protected', (req, res) => {
     if (req.session.user) {
@@ -176,6 +191,67 @@ app.get('/protected', (req, res) => {
     }
 });
 
+// Ruta para obtener todos los registros de la tabla ::::::::::::::::::::
+
+app.get('/registros', (req, res) => {
+    const query = 'SELECT * FROM secciones';
+  
+    conexion.query(query, (error, results, fields) => {
+      if (error) {
+        res.status(500).json({ error: 'Error al obtener los registros' });
+        return;
+      }
+      res.json(results);
+    });
+  });
+
+
+  // Ruta para obtener todos las respuestas de la tabla ::::::::::::::::::::
+
+app.get('/respuestas', (req, res) => {
+    const query = 'SELECT * FROM respuestas';
+  
+    conexion.query(query, (error, results, fields) => {
+      if (error) {
+        res.status(500).json({ error: 'Error al obtener los registros' });
+        return;
+      }
+      res.json(results);
+    });
+  });
+
+  // Ruta para saber si existe respuesta para la seccion ::::::::::::::::::::
+
+/*  hay que poner los datos de la tabla que se lee ---
+// Simula la base de datos
+const respuestas = [
+  { cuit: '12345678901', capitulo: '1', seccion: 'A', score: 85 },
+  { cuit: '12345678901', capitulo: '2', seccion: 'B', score: 90 },
+  // Añade más registros según sea necesario
+];
+*/
+
+app.get('/validar-respuesta', (req, res) => {
+    const { cuit, capitulo, seccion } = req.query;
+    const respuesta = respuestas.find(
+      (respuesta) => respuesta.cuit === cuit && respuesta.capitulo === capitulo && respuesta.seccion === seccion
+    );
+
+    if (respuesta) {
+        res.json({ existe: true, score: respuesta.score});
+    } else {
+        res.json({ existe: false });
+    }
+  });
+
+/*
+Backend:
+
+En la ruta /validar-respuesta, usamos find en lugar de some para encontrar el registro específico que coincida con cuit, capitulo, y seccion.
+Si se encuentra el registro, devolvemos un JSON con { existe: true, score: respuesta.score }.
+Si no se encuentra, devolvemos { existe: false }.*/
+
+  
 // Captura todas las otras rutas para mostrar un 404 :::::::::::::::::::::::::::::::::
 app.get('*', (req, res) => {
     res.status(404).send('Page Not Found');
@@ -185,3 +261,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
+
+

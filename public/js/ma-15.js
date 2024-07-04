@@ -150,7 +150,7 @@ function mostrarMiAlerta(maximo, valores, porcientoFormateado) {
 // ::::::::::::::::::::::::
 
 function cerrarAlerta() {
-  alert("entro en cerrarAlerta");
+  // alert("entro en cerrarAlerta");
   document.getElementById("miAlerta").style.display = "none";
 }
 
@@ -187,43 +187,43 @@ function continuar() {
     });
 }
 
-async function grabarResultados(respuestas) {
-  alert("entro en grabar resultados");
+// async function grabarResultados(respuestas) {
+//   alert("entro en grabar resultados");
 
-  const cuit = "20114512894"; // Puedes obtener estos valores dinámicamente
-  const usuario = "ruben";
-  const capitulo = "A";
-  const datos = valores;
+//   const cuit = "20114512894"; // Puedes obtener estos valores dinámicamente
+//   const usuario = "ruben";
+//   const capitulo = "A";
+//   const datos = valores;
 
-  const body = {
-    cuit,
-    usuario,
-    capitulo,
-    datos,
-  };
+//   const body = {
+//     cuit,
+//     usuario,
+//     capitulo,
+//     datos,
+//   };
 
-  try {
-    const response = await fetch("http://localhost:3000/insertar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-      credentials: "include",
-    });
+//   try {
+//     const response = await fetch("http://localhost:3000/insertar", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(body),
+//       credentials: "include",
+//     });
 
-    const result = await response.json();
-    if (result.success) {
-      alert("no hay error");
-    } else {
-      throw new Error(result.error || "Error desconocido");
-    }
-  } catch (error) {
-    console.log("Error:", error);
-    alert("estamos en el error: " + error.message);
-    throw error; // Rechaza la promesa en caso de error
-  }
-}
+//     const result = await response.json();
+//     if (result.success) {
+//       alert("no hay error");
+//     } else {
+//       throw new Error(result.error || "Error desconocido");
+//     }
+//   } catch (error) {
+//     console.log("Error:", error);
+//     alert("estamos en el error: " + error.message);
+//     throw error; // Rechaza la promesa en caso de error
+//   }
+// }
 
 // grabacion mas completa
 
@@ -267,6 +267,9 @@ async function grabarResultados2(respuestas) {
     throw error; // Rechaza la promesa en caso de error
   }
 }
+
+
+
 
 
 // Armar velocimetro ::::::::::::::::::::::::::::::::::::::
