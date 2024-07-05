@@ -174,7 +174,7 @@ app.post('/api/login', (req, res) => {
 });
 
 /*Explicación:
-Inicio de sesión: Envías una solicitud de inicio de sesión al backend con las credenciales del usuario.
+Inicio de sesión: Envía solicitud de inicio de sesión al backend con las credenciales del usuario.
 Respuesta del servidor: El servidor responde con un objeto JSON que contiene un mensaje y un objeto user que incluye firstName, lastName y CUIT.
 Acceso a CUIT: En el frontend, puedes acceder a CUIT utilizando user.CUIT una vez que hayas recibido y procesado la respuesta.
 De esta manera, puedes utilizar el CUIT en cualquier parte del frontend después de que el usuario haya iniciado sesión correctamente. Si necesitas mantener el estado de inicio de sesión y los datos del usuario entre diferentes páginas o sesiones, podrías considerar almacenar esta información en localStorage, sessionStorage, o en el estado de tu aplicación si estás usando una librería como React, Vue, etc.
@@ -191,9 +191,9 @@ app.get('/protected', (req, res) => {
     }
 });
 
-// Ruta para obtener todos los registros de la tabla ::::::::::::::::::::
+// Ruta para obtener todos los registros de la tabla secciones ::::::::::::::::::::
 
-app.get('/registros', (req, res) => {
+app.get('/secciones', (req, res) => {
     const query = 'SELECT * FROM secciones';
   
     conexion.query(query, (error, results, fields) => {
@@ -201,7 +201,7 @@ app.get('/registros', (req, res) => {
         res.status(500).json({ error: 'Error al obtener los registros' });
         return;
       }
-      res.json(results);
+      res.json(results); // Convierte los resultados a JSON y los envía como respuesta
     });
   });
 
@@ -222,27 +222,51 @@ app.get('/respuestas', (req, res) => {
 
   // Ruta para saber si existe respuesta para la seccion ::::::::::::::::::::
 
-/*  hay que poner los datos de la tabla que se lee ---
-// Simula la base de datos
-const respuestas = [
-  { cuit: '12345678901', capitulo: '1', seccion: 'A', score: 85 },
-  { cuit: '12345678901', capitulo: '2', seccion: 'B', score: 90 },
-  // Añade más registros según sea necesario
-];
-*/
-
-app.get('/validar-respuesta', (req, res) => {
+app.get('/busca-respuesta', (req, res) => {
     const { cuit, capitulo, seccion } = req.query;
-    const respuesta = respuestas.find(
-      (respuesta) => respuesta.cuit === cuit && respuesta.capitulo === capitulo && respuesta.seccion === seccion
-    );
 
-    if (respuesta) {
-        res.json({ existe: true, score: respuesta.score});
-    } else {
-        res.json({ existe: false });
-    }
-  });
+    if (!cuit || !capitulo || !seccion) {
+        res.status(400).json({ error: 'Faltan parámetros requeridos' });
+        return;
+      }
+
+      const query = 'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ? AND seccion = ?';
+      const values = [cuit, capitulo, seccion];
+
+      conexion.query(query, values, (error, results, fields) => {
+        if (error) {
+          res.status(500).json({ error: 'Error al buscar el registro' });
+          return;
+        }
+
+        if (results.length === 0) {
+            res.status(404).json({ error: 'Registro no encontrado' });
+            return;
+          }
+          res.json(results[0]); // Suponiendo que quieres devolver un solo registro
+        });
+      });
+
+
+// app.get('/obtenerRespuestas', (req, res) => {
+//     const consulta = 'SELECT * FROM respuestas WHERE id = 5';
+
+//     conexion.query(consulta, function (error, resultados) {
+//         if (error) {
+//             console.log('Error:', error);
+//             res.status(500).json({ error: error.message });
+//         } else {
+
+//         const respuesta = respuestas.find(
+//         (respuesta) => respuesta.cuit === cuit && respuesta.capitulo === capitulo && respuesta.seccion === seccion
+//         );
+
+//         if (respuesta) {
+//             res.json({ existe: true, score: respuesta.score});
+//         } else {
+//             res.json({ existe: false });
+//         }
+//   )});
 
 /*
 Backend:

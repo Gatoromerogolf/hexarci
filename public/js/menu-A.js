@@ -2,9 +2,12 @@ let tablaMenuA = [];
 
 const CUIT = localStorage.getItem('CUIT'); // El CUIT que quieres validar
 
-fetch('http://localhost:3000/registros')
-  .then(response => response.json())
-  .then(data => {
+// lee la tabla de secciones.
+// fetch('http://localhost:3000/registros')
+fetch('/secciones')
+  .then(res => res.json()) // res es objeto de respta de la solic fetch
+                // res.json() convierte el cuerpo de la respta a JSON y devuelve una promesa
+  .then(data => { // data contiene el objeto JSON cuando se cumple la promesa de res.json
     let currentIndex = 0;
     
     const validateAndProceed = () => {
@@ -23,7 +26,7 @@ fetch('http://localhost:3000/registros')
       console.log("-------------------");
 
       // Realiza la validación aquí
-      validarRegistro(CUIT, registro.capitulo, registro.seccion)
+      buscaRespuesta(CUIT, registro.capitulo, registro.seccion)
         .then(existe => {
           if (existe) {
             const elemento = [
@@ -39,10 +42,12 @@ fetch('http://localhost:3000/registros')
             const elemento = [
               registro.seccionromano,
               registro.descripción,
-              null,
+              registro.pagina,
               respuesta.score
             ];
-            console.log('La validación falló. Ciclo terminado.');
+            tablaMenuEs.push(elemento)
+            console.log('encontro uno no terminado')
+            return;
           }
         })
         .catch(error => console.error('Error al validar el registro:', error));
@@ -52,9 +57,9 @@ fetch('http://localhost:3000/registros')
   })
   .catch(error => console.error('Error al obtener los registros:', error));
 
-// Función para validar el registro
-function validarRegistro(cuit, capitulo, seccion) {
-  return fetch(`http://localhost:3000/validar-respuesta?cuit=${cuit}&capitulo=${capitulo}&seccion=${seccion}`)
+// Función para ver si la seccion tiene respuestas (si se completo)
+function buscaRespuesta(cuit, capitulo, seccion) {
+  return fetch(`/busca-respuesta?cuit=${cuit}&capitulo=${capitulo}&seccion=${seccion}`)
     .then(response => response.json())
     .then(data => data.existe)
     .catch(error => {
@@ -127,6 +132,35 @@ En la función validateAndProceed, llamamos a validarRegistro para cada registro
 
 /*En este código, la función validateAndProceed se encarga de iterar sobre los registros y realizar la validación. Si la validación es exitosa (isValid es true), la función incrementa el índice (currentIndex) y se llama a sí misma para proceder con el siguiente registro. Si la validación falla, el ciclo se termina y se imprime un mensaje. La función realizarValidacion es un ejemplo de una función de validación que puedes adaptar a tus necesidades específicas.
 */
+
+/* 
+LECTURA DE UN REGISTRO EN MYSQL
+del lado del cliente.
+function leerRegistro() {
+      const id = document.getElementById('idInput').value; // TOMA EL VALOR DE LA PAGINA WEB
+      fetch(`/api/registro/${id}/${cuit}/${codigo}`)  // LE PASA PARAMETROs  ${id} ${cuit} ${codigo}
+        .then(response => response.json()) // convierte la respuesta a json
+        .then(data => { // toma los datos convertidos para trabajar
+          document.getElementById('resultado').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+del lado del servidor
+// Define una ruta para leer un registro
+app.get('/api/registro/:id/:cuit/:codigo', (req, res) => { // :id, cuit, codigo son datos variables
+  const { id, cuit, codigo } = req.params;  // toma datos variables de parametros del requerimiento 
+  const parametros = [id, cuit, codigo, item, renglon];  // los agrupa en una constante
+  const query = 'SELECT * FROM tabla WHERE id = ? AND cuit = ? AND codigo = ?';
+  connection.query(query, parametros, (err, results) => {
+    if (err) throw err;
+    res.json(results[0]); // Enviar el primer (y único) resultado como JSON
+  });
+});
+
+
 
 
 
