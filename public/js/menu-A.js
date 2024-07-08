@@ -1,4 +1,5 @@
 let tablaMenuEs = [];
+let tablaMenuA = [];
 let primeraVez = 0;
 // const CUIT = localStorage.getItem('CUIT'); // El CUIT que quieres validar
 // console.log ('CUIT , CUIT')
@@ -19,10 +20,8 @@ async function obtenerSecciones(indice) {
       const seccionRec = await response.json(); //registro seccion recibido
       if (seccionRec.length > 0) {
         const primerSeccion = seccionRec[0];
-        // console.log(`Sección: ${primerSeccion.seccion}`);
-        // console.log(`Descripción: ${primerSeccion.descripcion}`);
-        // console.log (`html :  ${primerSeccion.pagina}`);
-
+        console.log (primerSeccion)
+        console.log (primerSeccion.max4)
         // leo la tabla de respuestas para saber si se completó
         const CUIT = localStorage.getItem('CUIT');
         const capitulo = "A";
@@ -33,12 +32,14 @@ async function obtenerSecciones(indice) {
           // si lo encuentra, llena la tabla sin pasar el link
           console.log (`Encontro registro ${seccion} en obtenerSecciones`)
           // const registro = await response.json()
+
           const elemento = [
             `${primerSeccion.seccionromano}`,
             `##`,
             `${primerSeccion.descripcion}`,
-            null,
+            primerSeccion.max4,
             respuesta.score,
+            (respuesta.score / primerSeccion.max4 * 100).toFixed(2)
           ];
           tablaMenuEs.push(elemento);
         }
@@ -52,7 +53,7 @@ async function obtenerSecciones(indice) {
               null,
             ];
               if (primeraVez == 0) {
-                elemento[1] = `${primerSeccion.descripcion}`
+                elemento[1] = `${primerSeccion.pagina}`
                 primeraVez = 1;
               }
 
@@ -82,6 +83,17 @@ async function obtenerSecciones(indice) {
   }
 
   // Una vez que se han obtenido todos los datos, actualizar el HTML
+
+  elemento = [
+    null,
+    `##`,
+    "Calificación general:",
+    null,
+    null,
+  ];
+  tablaMenuEs.push(elemento);
+
+
   actualizarHTML(tablaMenuEs);
 } catch (error) {
   console.error('Error en la función autoinvocada:', error);  
@@ -115,10 +127,9 @@ async function buscaRespuesta(CUIT, capitulo, seccion) {
 // Función para actualizar el HTML con los datos de la tabla
 function actualizarHTML(tablaMenuEs) {
   console.log (tablaMenuEs)
-  // console.log (`longitud de tabla al entrar al llenado ${tablaMenuEs.length}`)    
-  // console.log ("largo de tabla menues" + tablaMenuEs.length);
+
   tablaMenuA = tablaMenuEs;
-  // console.log ("largo de tabla menu A" + tablaMenuA.length);
+
 
   // for (i = 0; i < tablaMenuA.length - 1; i++) {
   //   tablaMenuA[15][3] += tablaMenuA[i][3];
@@ -140,8 +151,6 @@ function actualizarHTML(tablaMenuEs) {
 
     let celdaNombre = lineaDatosFd.insertCell(-1);
     celdaNombre.textContent = tablaMenuA[i][0];
-    // alert (tablaMenuA[i][0])
-
 
     // Crear la segunda celda (columna) como un enlace:
     // un elemento <a> con el valor de tablaMenuA[i][1]
@@ -153,6 +162,7 @@ function actualizarHTML(tablaMenuEs) {
     enlace.textContent = tablaMenuA[i][2]; // Establecer el texto del enlace con el tercer elemento de la tabla
     enlace.style.textDecoration = 'none';
       // Agregar el enlace como hijo de la celda
+
     if (i == tablaMenuA.length-1){
       enlace.style.fontSize = '18px'; // Cambiar el tamaño de la fuente
       enlace.style.fontWeight = 'bold'; // Hacer el texto en negrita
@@ -164,7 +174,7 @@ function actualizarHTML(tablaMenuEs) {
       celdaEnlace.style.alignItems = 'center';
     }  
     celdaEnlace.appendChild(enlace); 
-    
+
 
     celdaMaximo = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][3] === 0) {
@@ -173,12 +183,14 @@ function actualizarHTML(tablaMenuEs) {
     celdaMaximo.textContent = tablaMenuA[i][3];
     celdaMaximo.classList.add('ajustado-derecha');
 
+
     celdaPuntos = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][4] === 0) {
       tablaMenuA[i][4] = ""
     }
     celdaPuntos.textContent = tablaMenuA[i][4];
     celdaPuntos.classList.add('ajustado-derecha');
+
 
     celdaPorciento = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][5] === 0) {
