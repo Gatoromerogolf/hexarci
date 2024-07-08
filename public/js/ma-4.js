@@ -223,7 +223,6 @@ function calculaResultados() {
       valores ${valores}`    
      );
 
-
   }
   const porcientoFormateado = ((valores / maximo) * 100).toFixed(2);
   console.log(`porciento formateado ${porcientoFormateado}`)
@@ -260,7 +259,6 @@ document
       localStorage.setItem("valores-4", JSON.stringify(valores));
       localStorage.setItem("porciento-4", JSON.stringify(porcientoFormateado));
 
-      // window.location.href = "Menu-A.html";
     }
   });
 
@@ -280,9 +278,6 @@ function limpiarSelecciones() {
   checkboxes.forEach(function (checkbox) {
     checkbox.checked = false;
   });
-
-  // Apagar todas las reuniones y auditor de la segunda linea
-          // fila2.style.display = 'none';
 
   document.getElementById("tituloFrecuencia").style.display = 'none';
 
@@ -332,7 +327,6 @@ function mostrarMiAlerta(maximo, valores, porcientoFormateado) {
   document.getElementById('maximo').textContent = maximo;
   document.getElementById('calificacion').textContent = valores;
   document.getElementById('porcentual').innerHTML = '<strong>' + porcientoFormateado + '%<strong>';
-
 }
 
 function cerrarAlerta() {
@@ -344,7 +338,6 @@ function continuar() {
 
   grabarResultados2(respuestas)
     .then(() => {
-      alert("ahora llama al menu-15");
       window.location.href =
         JSON.parse(localStorage.getItem("idioma")) == 1
           ? "MA-5.html"
@@ -356,19 +349,13 @@ function continuar() {
     });
 }
 
-
 async function grabarResultados2(respuestas) {
-  alert("entro en grabar resultados");
-
-  //const CUIT = "20999999994"; // Puedes obtener estos valores dinámicamente
-  // const usuario = "ruben";
   const capitulo = "A";
   const seccion = 4;
   const score = valores;
   const respuesta = respuestas;
 
   const body = {
-    //CUIT,
     capitulo,
     seccion,
     score,
@@ -387,7 +374,7 @@ async function grabarResultados2(respuestas) {
 
     const result = await response.json();
     if (result.success) {
-      alert("no hay error");
+      console.log("no hay error");
     } else {
       throw new Error(result.error || "Error desconocido ins 2");
     }

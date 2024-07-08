@@ -158,7 +158,6 @@ function continuar() {
 
   grabarResultados2(respuestas)
     .then(() => {
-      alert("ahora llama al menu-15");
       window.location.href =
         JSON.parse(localStorage.getItem("idioma")) == 1
           ? "MA-7.html"
@@ -172,17 +171,13 @@ function continuar() {
 
 
 async function grabarResultados2(respuestas) {
-  alert("entro en grabar resultados");
 
-  //const CUIT = "20999999994"; // Puedes obtener estos valores dinámicamente
-  // const usuario = "ruben";
   const capitulo = "A";
   const seccion = 6;
   const score = valores;
   const respuesta = respuestas;
 
   const body = {
-    //CUIT,
     capitulo,
     seccion,
     score,
@@ -201,7 +196,7 @@ async function grabarResultados2(respuestas) {
 
     const result = await response.json();
     if (result.success) {
-      alert("no hay error");
+      console.log("no hay error");
     } else {
       throw new Error(result.error || "Error desconocido ins 2");
     }

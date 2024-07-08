@@ -161,8 +161,59 @@ function cerrarAlerta() {
 
 function continuar() {
   cerrarAlerta();  // Opcional, depende de si quieres cerrar la alerta antes de cambiar la página
-window.location.href = (JSON.parse(localStorage.getItem('idioma'))) == 1 ? "MA-11.html" : "MA-11-en.html"
+
+  grabarResultados2(respuestas)
+    .then(() => {
+      window.location.href =
+        JSON.parse(localStorage.getItem("idioma")) == 1
+          ? "MA-11.html"
+          : "MA-11-en.html";
+    })
+    .catch((error) => {
+      console.error("Error en grabarResultados:", error);
+      alert("Hubo un error al grabar los resultados: " + error.message);
+    });
 }
+
+
+async function grabarResultados2(respuestas) {
+
+  const capitulo = "A";
+  const seccion = 10;
+  const score = valores;
+  const respuesta = respuestas;
+
+  const body = {
+    capitulo,
+    seccion,
+    score,
+    respuesta
+  };
+
+  try {
+    const response = await fetch("http://localhost:3000/insertar2", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      credentials: "include",
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      console.log("no hay error");
+    } else {
+      throw new Error(result.error || "Error desconocido ins 2");
+    }
+  } catch (error) {
+    console.log("Error:", error);
+    alert("estamos en el error (ins 2): " + error.message);
+    throw error; // Rechaza la promesa en caso de error
+  }
+}
+
+
 
 // Armar velocimetro ::::::::::::::::::::::::::::::::::::::
 const opts = {

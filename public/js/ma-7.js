@@ -204,7 +204,7 @@ async function grabarResultados2(respuestas) {
 
     const result = await response.json();
     if (result.success) {
-      alert("no hay error");
+      console.log('no hay error')
     } else {
       throw new Error(result.error || "Error desconocido ins 2");
     }

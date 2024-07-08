@@ -111,10 +111,6 @@ document
     valores = 0;
     event.preventDefault(); // Prevenir el envío del formulario
 
-    // obtener los valores de radio 
-    // obtenerValoresSeleccionados();
-    // console.log(`indice de respuestas faltantes ${filasFaltantes}`)
-
     // obtener CheckboxSeleccionados();
     let resultadoError = obtenerCheckboxSeleccionados();
     console.log(`return del checkbox  ${resultadoError}`)
@@ -125,30 +121,13 @@ document
       sumaPuntosCheckbox();
 
       porcientoFormateado = ((valores / maximo) * 100).toFixed(2);
-      // alert(
-      //   `Calificación obtenida: \n
-      //       Puntaje máximo de la sección: ${maximo} \n
-      //       Calificación: ${valores} \n
-      //       Porcentual: ${porcientoFormateado}%`
-      // );
+
       mostrarMiAlerta(maximo, valores, porcientoFormateado);
-
-      // console.log(`Suma puntos ${valores},
-      //            valor máximo: ${maximo},
-      //            porcentaje ${porcientoFormateado}`);
-      // console.table(puntajesIndividuales);
-
-
-      // // Supongamos que calculas o recibes algún valor 'nuevoValor'
-      // let nuevoValor = porcientoFormateado; // Función hipotética que genera un valor
-
-      // Guardar el valor en LocalStorage
 
       localStorage.setItem('maximo-2', JSON.stringify(maximo));
       localStorage.setItem('valores-2', JSON.stringify(valores));
       localStorage.setItem('porciento-2', JSON.stringify(porcientoFormateado));
 
-      // window.location.href = 'MA-3.html'
     }
   });
 
@@ -170,8 +149,6 @@ document
     }); 
   }
   );
-
-
 
 // limpiarSelecciones ::::::::::::::::::::::::::::::::::::::::::::
 
@@ -210,7 +187,6 @@ function mostrarMiAlerta(maximo, valores, porcientoFormateado) {
   document.getElementById('maximo').textContent = maximo;
   document.getElementById('calificacion').textContent = valores;
   document.getElementById('porcentual').innerHTML = '<strong>' + porcientoFormateado + '%<strong>';
-
 }
 
 function cerrarAlerta() {
@@ -228,7 +204,6 @@ function continuar() {
 
   grabarResultados2(respuestas)
     .then(() => {
-      alert("ahora llama al menu-3");
       window.location.href =
         JSON.parse(localStorage.getItem("idioma")) == 1
           ? "MA-3.html"
@@ -240,20 +215,14 @@ function continuar() {
     });
 }
 
-
-
 async function grabarResultados2(respuestas) {
-  alert("entro en grabar resultados");
 
-  //const CUIT = "20999999994"; // Puedes obtener estos valores dinámicamente
-  // const usuario = "ruben";
   const capitulo = "A";
   const seccion = 2;
   const score = valores;
   const respuesta = respuestas;
 
   const body = {
-    //CUIT,
     capitulo,
     seccion,
     score,
@@ -272,7 +241,6 @@ async function grabarResultados2(respuestas) {
 
     const result = await response.json();
     if (result.success) {
-      alert("no hay error");
     } else {
       throw new Error(result.error || "Error desconocido ins 2");
     }

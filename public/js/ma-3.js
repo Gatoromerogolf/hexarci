@@ -40,7 +40,6 @@ function obtenerCheckboxSeleccionados() {
   return errorCheckbox = 0;
 }
 
-
 // sumaPuntosCheckbox() :::::::::::::::::::::::::::::::::::::::::::::::
 
 function sumaPuntosCheckbox() {
@@ -56,13 +55,11 @@ function sumaPuntosCheckbox() {
       valores += 20
     }}
 
-    // valores += tabla[6][checkboxesSeleccionados[i] - 1];
-
     console.log(
       `valor despues calculo: ${valores} , ${checkboxesSeleccionados[i]}`)
       ;
   }
-  // errorCheckbox = 0;
+
 }
 
 // CalculaResultados ::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -111,18 +108,8 @@ document
       sumaPuntosCheckbox();
 
       porcientoFormateado = ((valores / maximo) * 100).toFixed(2);
-      // alert(
-      //   `Calificación obtenida: \n
-      //       Puntaje máximo de la sección: ${maximo} \n
-      //       Calificación: ${valores} \n
-      //       Porcentual: ${porcientoFormateado}%`
-      // );
-      mostrarMiAlerta(maximo, valores, porcientoFormateado);
-      // console.log(`Suma puntos ${valores},
-      //            valor máximo: ${maximo},
-      //            porcentaje ${porcientoFormateado}`);
-      // console.table(puntajesIndividuales);
 
+      mostrarMiAlerta(maximo, valores, porcientoFormateado);
 
       // Guardar el valor en LocalStorage
       localStorage.setItem('maximo-3', JSON.stringify(maximo));
@@ -183,7 +170,6 @@ function continuar() {
 
   grabarResultados2(respuestas)
     .then(() => {
-      alert("ahora llama al menu-15");
       window.location.href =
         JSON.parse(localStorage.getItem("idioma")) == 1
           ? "MA-4.html"
@@ -198,10 +184,7 @@ function continuar() {
 // grabarResultados2 :::::::::::::::::::::::::::::::::::::::::::::::
 
 async function grabarResultados2(respuestas) {
-  alert("entro en grabar resultados");
 
-  //const CUIT = "20999999994"; // Puedes obtener estos valores dinámicamente
-  // const usuario = "ruben";
   const capitulo = "A";
   const seccion = 3;
   const score = valores;
@@ -227,7 +210,7 @@ async function grabarResultados2(respuestas) {
 
     const result = await response.json();
     if (result.success) {
-      alert("no hay error");
+      console.log("no hay error");
     } else {
       throw new Error(result.error || "Error desconocido ins 2");
     }
