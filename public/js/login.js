@@ -22,6 +22,12 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             localStorage.setItem('nombre', data.user.firstName);
             localStorage.setItem('apellido', data.user.lastName);
             localStorage.setItem('CUIT', data.user.CUIT);
+            
+            console.log(`valores guardados: ${data.user.firstName}, ${data.user.lastName}, ${data.user.CUIT}`)
+            console.log('Valores guardados en localStorage:');
+            console.log('nombre:', localStorage.getItem('nombre'));
+            console.log('apellido:', localStorage.getItem('apellido'));
+            console.log('CUIT:', localStorage.getItem('CUIT'));
             // Login exitoso, redirige a presentacion.html
             window.location.href = '../src/presentacion.html';
         } else {

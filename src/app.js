@@ -194,16 +194,26 @@ app.get('/protected', (req, res) => {
 // Ruta para obtener todos los registros de la tabla secciones ::::::::::::::::::::
 
 app.get('/secciones', (req, res) => {
-    const query = 'SELECT * FROM secciones';
+    // obtiene el indice de la consulta
+    const indice = parseInt(req.query.indice) || 0;
+    console.log (`el indice leido en /secciones:  ${indice}`)
+    const query = 'SELECT * FROM secciones WHERE seccion = ?';
   
-    conexion.query(query, (error, results, fields) => {
-      if (error) {
-        res.status(500).json({ error: 'Error al obtener los registros' });
-        return;
-      }
-      res.json(results); // Convierte los resultados a JSON y los envía como respuesta
+    conexion.query(query, [indice], (error, results, fields) => {
+        if (error) {
+          res.status(500).json({ error: 'Error al obtener los registros' });
+          console.log("error servidor al obtener registros");
+          return;
+        }
+    
+        // Verificar si hay al menos un registro
+        if (results.length > 0) {
+          res.json(results);
+        } else {
+          res.status(404).json({ error: 'No se encontraron registros' });
+        }
+      });
     });
-  });
 
 
   // Ruta para obtener todos las respuestas de la tabla ::::::::::::::::::::
@@ -223,27 +233,32 @@ app.get('/respuestas', (req, res) => {
   // Ruta para saber si existe respuesta para la seccion ::::::::::::::::::::
 
 app.get('/busca-respuesta', (req, res) => {
-    const { cuit, capitulo, seccion } = req.query;
+    const { CUIT, capitulo, seccion } = req.query;
 
-    if (!cuit || !capitulo || !seccion) {
+    if (!CUIT || !capitulo || !seccion) {
         res.status(400).json({ error: 'Faltan parámetros requeridos' });
+        console.log (`valores CUIT ${CUIT}, capitulo ${capitulo}, seccion ${seccion}`)
+        console.log (`salio en error por aca`)
         return;
       }
+    const query = 'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ? AND seccion = ?';
+    const values = [CUIT, capitulo, seccion];
+    console.log(`valores que busca: ${values}`)
 
-      const query = 'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ? AND seccion = ?';
-      const values = [cuit, capitulo, seccion];
-
-      conexion.query(query, values, (error, results, fields) => {
+    conexion.query(query, values, (error, results, fields) => {
         if (error) {
+            console.log ('primer error en el query')
           res.status(500).json({ error: 'Error al buscar el registro' });
           return;
         }
 
-        if (results.length === 0) {
-            res.status(404).json({ error: 'Registro no encontrado' });
-            return;
+        if (results.length > 0) {
+            console.log (`encontro respuesta para seccion ${seccion}`)
+            res.json({ exists: true, score: results[0].score });
+          } else {
+            console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
+            res.json({ exists: false });
           }
-          res.json(results[0]); // Suponiendo que quieres devolver un solo registro
         });
       });
 
