@@ -27,6 +27,10 @@ async function obtenerSecciones(indice) {
         const capitulo = "A";
         const seccion = primerSeccion.seccion;
 
+        // localStorage.setItem("3o4Direct", JSON.stringify(respuestas[0]));
+        const direc34 = localStorage.getItem(direct3o4);
+        const maximo = direc34 === '1' ? primerSeccion.max3 : primerSeccion.max4;
+
         const respuesta = await buscaRespuesta(CUIT, capitulo, seccion);
         if (respuesta.exists){
           // si lo encuentra, llena la tabla sin pasar el link
@@ -37,7 +41,7 @@ async function obtenerSecciones(indice) {
             `${primerSeccion.seccionromano}`,
             `##`,
             `${primerSeccion.descripcion}`,
-            primerSeccion.max4,
+            maximo,
             respuesta.score,
             (respuesta.score / primerSeccion.max4 * 100).toFixed(2)
           ];
