@@ -185,7 +185,7 @@ function continuar() {
 async function grabarResultados2(respuestas) {
 
   const capitulo = "A";
-  const seccion = 14;
+  const seccion = 12;
   const score = valores;
   const respuesta = respuestas;
 

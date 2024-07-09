@@ -41,11 +41,16 @@ h1, h2, h3 {
     color: #333333;
 }
 
+h3 {
+  margin-top: 0; /* Elimina el margen superior del h3 */
+}
+
 .form-group {
     margin-bottom: 15px;
 }
 
-#tablaIndice {
+#tablaIndice,
+#tablaIndiceCapitulos {
     text-decoration: none;
     padding:2px ;
     display:block;
@@ -55,7 +60,8 @@ h1, h2, h3 {
     margin: auto; /* Centra horizontalmente */
 }
 
-#tablaIndice  th{
+#tablaIndice th,
+#tablaIndiceCapitulos th{
     background-color: #f0f0f0; /* Color de fondo */
     border: 1px solid #ccc; /* Borde */
     padding: 8px; /* Espaciado interno */
@@ -63,6 +69,14 @@ h1, h2, h3 {
     font-family:'Roboto', sans-serif;
   }
 
+  #tablaIndiceCapitulos tr {
+    height: 21px; /* Ajusta esta altura según tus necesidades */
+    font-size: 15px; /* Tamaño del texto */
+}
+  #tablaIndice tr {
+    height: 21px; /* Ajusta esta altura según tus necesidades */
+    font-size: 15px; /* Tamaño del texto */
+}
   
 .botonSiguiente {
   display: inline-block;

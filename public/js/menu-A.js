@@ -1,8 +1,6 @@
 let tablaMenuEs = [];
 let tablaMenuA = [];
 let primeraVez = 0;
-// const CUIT = localStorage.getItem('CUIT'); // El CUIT que quieres validar
-// console.log ('CUIT , CUIT')
 
 // lee la tabla de secciones.
 // fetch('http://localhost:3000/registros')
@@ -28,7 +26,9 @@ async function obtenerSecciones(indice) {
         const seccion = primerSeccion.seccion;
 
         // localStorage.setItem("3o4Direct", JSON.stringify(respuestas[0]));
-        const direc34 = localStorage.getItem(direct3o4);
+        const direct3o4 = 'direct3o4';
+        const direc34 = localStorage.getItem(direct3o4) || 2;
+        
         const maximo = direc34 === '1' ? primerSeccion.max3 : primerSeccion.max4;
 
         const respuesta = await buscaRespuesta(CUIT, capitulo, seccion);
@@ -60,9 +60,7 @@ async function obtenerSecciones(indice) {
                 elemento[1] = `${primerSeccion.pagina}`
                 primeraVez = 1;
               }
-
               tablaMenuEs.push(elemento);
-
             // return true; // marca para terminar el ciclo
         }
       }
@@ -78,30 +76,24 @@ async function obtenerSecciones(indice) {
 
 (async function() {
   try {
-    // Inicializar la tabla de secciones
-    // let tablaMenuEs = [];    
-  
-  for (let indice = 1; indice < 16; indice++) {
-    const shouldTerminate = await obtenerSecciones(indice);
-    if (shouldTerminate) break;
-  }
-
+    for (let indice = 1; indice < 16; indice++) {
+      const shouldTerminate = await obtenerSecciones(indice);
+      if (shouldTerminate) break;
+    }
   // Una vez que se han obtenido todos los datos, actualizar el HTML
+      elemento = [
+        null,
+        `##`,
+        "Calificación general:",
+        null,
+        null,
+      ];
+    tablaMenuEs.push(elemento);
+    actualizarHTML(tablaMenuEs);
 
-  elemento = [
-    null,
-    `##`,
-    "Calificación general:",
-    null,
-    null,
-  ];
-  tablaMenuEs.push(elemento);
-
-
-  actualizarHTML(tablaMenuEs);
-} catch (error) {
-  console.error('Error en la función autoinvocada:', error);  
-}
+  } catch (error) {
+    console.error('Error en la función autoinvocada:', error);  
+  }
 })();
 
 async function buscaRespuesta(CUIT, capitulo, seccion) {
@@ -122,29 +114,15 @@ async function buscaRespuesta(CUIT, capitulo, seccion) {
   return { exists: false };
 }
 
-// if(JSON.parse(localStorage.getItem('idioma')) == 2){
-//   tablaMenuA = tablaMenuIn;
-// }  else {
-//   tablaMenuA = tablaMenuEs;
-// }
 
 // Función para actualizar el HTML con los datos de la tabla
 function actualizarHTML(tablaMenuEs) {
   console.log (tablaMenuEs)
 
   tablaMenuA = tablaMenuEs;
-
-
-  // for (i = 0; i < tablaMenuA.length - 1; i++) {
-  //   tablaMenuA[15][3] += tablaMenuA[i][3];
-  //   tablaMenuA[15][4] += tablaMenuA[i][4];
-  // }
-
-  // if (tablaMenuA[15][4] !== 0) {
-  //   tablaMenuA[15][5] = ((tablaMenuA[i][4] / tablaMenuA[15][3]) * 100).toFixed(2)
-  // }
-
-  // console.log(`puntos: ${valorRecuperado} y el maximo: ${valorMaximo} y el de funcion 2 ${valorFuncion2}`);
+  let totalMax = 0;
+  let totalCal = 0;
+  let totalPor = 0;
 
   //  llena la matriz 
   let lineaDatosFd = document.getElementById("lineaMenu");
@@ -179,14 +157,13 @@ function actualizarHTML(tablaMenuEs) {
     }  
     celdaEnlace.appendChild(enlace); 
 
-
     celdaMaximo = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][3] === 0) {
       tablaMenuA[i][3] = ""
     }
     celdaMaximo.textContent = tablaMenuA[i][3];
     celdaMaximo.classList.add('ajustado-derecha');
-
+    totalMax += tablaMenuA[i][3];
 
     celdaPuntos = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][4] === 0) {
@@ -194,7 +171,8 @@ function actualizarHTML(tablaMenuEs) {
     }
     celdaPuntos.textContent = tablaMenuA[i][4];
     celdaPuntos.classList.add('ajustado-derecha');
-
+    // Convierte el valor a un número antes de sumarlo
+    totalCal += Number(tablaMenuA[i][4]);
 
     celdaPorciento = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][5] === 0) {
@@ -202,13 +180,56 @@ function actualizarHTML(tablaMenuEs) {
     }
     celdaPorciento.textContent = tablaMenuA[i][5];
     celdaPorciento.classList.add('ajustado-derecha');
+    totalPor = ((totalCal / totalMax) * 100).toFixed(2);
   }
 
   // localStorage.setItem("maximo-A", JSON.stringify(tablaMenuA[15][3]));
   // localStorage.setItem("valores-A", JSON.stringify(tablaMenuA[15][4]));
   // localStorage.setItem("porciento-A", JSON.stringify(tablaMenuA[15][5]));
 
+  if (tablaMenuA[14][4] > 0) {
+    document.getElementById("botonSiguiente").style.display = "block";
 
-  if (tablaMenuA[14][4] > 0) {document.getElementById("botonSiguiente").style.display = "block";}
+    celdaMaximo.textContent = totalMax;
+    celdaMaximo.classList.add('ajustado-derecha');
+    celdaMaximo.style.fontWeight = 'bold'; // Hacer el texto en negrita
 
+    celdaPuntos.textContent = totalCal;
+    celdaPuntos.classList.add('ajustado-derecha');
+    celdaPuntos.style.fontWeight = 'bold'; // Hacer el texto en negrita
+
+    celdaPorciento.textContent = totalPor;
+    celdaPorciento.classList.add('ajustado-derecha');
+    celdaPorciento.style.fontWeight = 'bold'; // Hacer el texto en negrita
+
+    localStorage.setItem('porciento-A', totalPor)
+
+    const letra = "A";  
+    actualizaCapitulos(letra, totalMax, totalCal, totalPor)
+    // const var1 = JSON.parse(localStorage.getItem('porciento-A'));
+    }
 }
+
+function actualizaCapitulos (letra, maximo, calif, porcen){
+  fetch('/update-capitulo', {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ letra, maximo, calif, porcen })
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error('Error en la actualización');
+    }
+    return response.text();
+})
+.then(data => {
+    alert('Registro actualizado correctamente');
+    console.log(data);
+})
+.catch(error => {
+    alert('Hubo un problema con la actualización');
+    console.error(error);
+});
+};

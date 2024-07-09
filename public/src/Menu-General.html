@@ -23,22 +23,24 @@
                 <img src="../img/contenido (1).png" width="30px">
               </a>
             </div>
+            <div class="logo">
+              <img src="../img/molinos.png" width="150px">
+            </div>
             <div class="right-icons">
               <a href="Menu-General.html" id="spainIcon"> 
                 <img src="../img/espana.png" width="25px">
               </a>
-              <a href="Menu-General-en.html" id="usaIcon">
+              <!-- <a href="Menu-General-en.html" id="usaIcon">
                 <img src="../img/usa.png" width="25px">
-              </a>
+              </a> -->
             </div>
           </div>
 
-            <h1>Bienvenido, <span id="username"></span>!</h1>
-          <h3>Compañía: 'Nombre de la compañía'</h3>
-          <!-- <h3>Autoevaluación. Capítulos.</h3> -->
+            <!-- <h1>Bienvenido, <span id="username"></span>!</h1> -->
+            <h3>Autoevaluación del manejo del riesgo en Molinos Agro</h3>
 
           <div class="contenedorTabla">
-            <table id="tablaIndice">
+            <table id="tablaIndiceCapitulos">
               <tr>
                 <th>#</th>
                 <th style="width: 400px;">Capítulo</th>
@@ -59,7 +61,11 @@
   </div>
 </body>
 
-  <script>
+<script>
+  localStorage.setItem('idioma', '1');
+</script>
+
+  <!-- <script>
     // Agrega un evento de clic al ícono de España
     document.getElementById('spainIcon').addEventListener('click', function () {
       // Setea una variable en el localStorage con valor 1 cuando se hace clic en el ícono de España
@@ -73,9 +79,9 @@
       // Setea una variable en el localStorage con valor 1 cuando se hace clic en el ícono de USA
       localStorage.setItem('idioma', '2');
     });
-  </script>
+  </script> -->
 
-<script>
+<!-- <script>
   // Obtener el nombre del usuario de localStorage
   const username = localStorage.getItem('username');
   
@@ -86,7 +92,7 @@
       // Si no hay un usuario en localStorage, redirigir a la página de login
       window.location.href = '../login.html';
   }
-</script>
+</script> -->
 
 <script src="../../js/menu-General.js"></script>
 

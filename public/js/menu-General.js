@@ -152,7 +152,7 @@ if (tablaMenuA[6][4] > 0) {
 //  llena la matriz 
 //let lineaDatosFd = document.getElementById("lineaMenu");
 //let lineaDatosFd = document.getElementById("tablaIndice");
-let tablaIndice = document.getElementById("tablaIndice");
+let tablaIndice = document.getElementById("tablaIndiceCapitulos");
 
 for (i = 0; i < tablaMenuA.length; i++) {
   //lineaDatosFd = tablaIndice.insertRow();

@@ -151,7 +151,6 @@ function continuar() {
 
   grabarResultados2(respuestas)
     .then(() => {
-      alert("ahora llama al menu-15");
       window.location.href =
         JSON.parse(localStorage.getItem("idioma")) == 1
           ? "MA-14.html"

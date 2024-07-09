@@ -1,8 +1,6 @@
 body {
     font-family: 'Roboto', Arial, sans-serif;
-    /* background-image: url('../img/reuniones.png'); ../estilos/estiloMenuGeneral.css */
-    background-image: url('background.jpg'); /*../estilos/estiloMenuGeneral.css*/
-    background-image: url('../estilos/background.jpg'); /*../estilos/estiloMenuGeneral.css */
+    background-image: url('reuniones.png'); /*../estilos/estiloMenuGeneral.css*/
     background-size: cover; /* Asegura que la imagen cubra toda la pantalla */
     background-position: center; /* Centra la imagen */
     background-attachment: fixed; /* Mantiene la imagen fija al hacer scroll */
@@ -11,11 +9,42 @@ body {
     background-attachment: fixed;
 }
 
+
+body.corporativo {
+  background: url('background.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase aperie */
+body.aperie {
+  background: url('background-aperie.jpg') no-repeat center bottom fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase procesos */
+body.procesos {
+  background: url('background-procesos.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase mercado */
+body.mercado {
+  background: url('background mercado.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
 /* Fondo específico para la clase fiananciero */
 body.financiero {
   background: url('background financiero.jpg') no-repeat center center fixed;
   background-size: cover;
 }
+
+/* Fondo específico para la clase calidad */
+body.calidad {
+  background: url('background calidad.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
 
 .survey-container {
     max-width: 900px;
@@ -89,7 +118,7 @@ h1, h2, h3 {
 }
 
 .centrado-flex {
-    margin: 5px;
+    margin: 20px;
     display: flex;
     justify-content: center; /* Centra horizontalmente */
     /*align-items: center; Centra verticalmente*/
@@ -170,11 +199,40 @@ h1, h2, h3 {
 }
 
 .chart-containerxxx {
-  /*position: relative;*/
-  height: 700px;
-  width: 900px;
-
+  position: relative;
+  height: 600px;
+  width: 700px;
+  border-style:groove; 
 }
+
+.alerta-contenido-chart {
+  position: relative;
+  width: 1000px;
+  margin: 5% auto;
+  padding: 10px;
+  background: white;
+  border-radius: 5px;
+  font-family:'Roboto', sans-serif;
+}
+
+.alerta-cabecera-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  text-align: center;
+  font-size: 20px; /* Tamaño de la fuente */
+  font-weight: bold; /* Negrita */
+}
+
+.alerta-cuerpo-chart {
+  margin: 0;
+  font-size: 16px; /* Tamaño de la fuente */
+  text-align: center;
+}
+
+
+
 #continuar{
   background-color: #4CAF50; /* Color de fondo */
   color: white; /* Color de texto */
@@ -399,8 +457,4 @@ h1, h2, h3 {
       width: 100%;  /* Ajusta este valor según sea necesario para coincidir con las otras tablas */
       margin: 0 auto;  /* Esto centra el contenedor en el medio de la página */
   
-}
-
-.red-text {
-  color: red;
 }

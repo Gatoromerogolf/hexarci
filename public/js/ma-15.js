@@ -171,11 +171,9 @@ function cerrarAlerta() {
 
 function continuar() {
   cerrarAlerta(); // Opcional, depende de si quieres cerrar la alerta antes de cambiar la página
-  alert("entro en continuar");
 
   grabarResultados2(respuestas)
     .then(() => {
-      alert("ahora llama al menu-a");
       window.location.href =
         JSON.parse(localStorage.getItem("idioma")) == 1
           ? "Menu-A.html"
@@ -187,58 +185,15 @@ function continuar() {
     });
 }
 
-// async function grabarResultados(respuestas) {
-//   alert("entro en grabar resultados");
-
-//   const cuit = "20114512894"; // Puedes obtener estos valores dinámicamente
-//   const usuario = "ruben";
-//   const capitulo = "A";
-//   const datos = valores;
-
-//   const body = {
-//     cuit,
-//     usuario,
-//     capitulo,
-//     datos,
-//   };
-
-//   try {
-//     const response = await fetch("http://localhost:3000/insertar", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(body),
-//       credentials: "include",
-//     });
-
-//     const result = await response.json();
-//     if (result.success) {
-//       alert("no hay error");
-//     } else {
-//       throw new Error(result.error || "Error desconocido");
-//     }
-//   } catch (error) {
-//     console.log("Error:", error);
-//     alert("estamos en el error: " + error.message);
-//     throw error; // Rechaza la promesa en caso de error
-//   }
-// }
-
 // grabacion mas completa
 
 async function grabarResultados2(respuestas) {
-  alert("entro en grabar resultados");
-
-  //const CUIT = "20999999994"; // Puedes obtener estos valores dinámicamente
-  // const usuario = "ruben";
   const capitulo = "A";
   const seccion = 15;
   const score = valores;
   const respuesta = respuestas;
 
   const body = {
-    //CUIT,
     capitulo,
     seccion,
     score,
@@ -258,7 +213,7 @@ async function grabarResultados2(respuestas) {
 
     const result = await response.json();
     if (result.success) {
-      alert("no hay error");
+      console.log("no hay error");
     } else {
       throw new Error(result.error || "Error desconocido ins 2");
     }
@@ -268,9 +223,6 @@ async function grabarResultados2(respuestas) {
     throw error; // Rechaza la promesa en caso de error
   }
 }
-
-
-
 
 
 // Armar velocimetro ::::::::::::::::::::::::::::::::::::::

@@ -188,7 +188,7 @@ async function grabarResultados2(respuestas) {
   const capitulo = "A";
   const seccion = 3;
   const score = valores;
-  const respuesta = respuestas;
+  const respuesta = checkboxesSeleccionados;
 
   const body = {
     //CUIT,

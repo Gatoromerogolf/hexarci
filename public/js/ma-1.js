@@ -315,7 +315,6 @@ async function grabarResultados2(respuestas) {
   const respuesta = respuestas;
 
   const body = {
-    //CUIT,
     capitulo,
     seccion,
     score,

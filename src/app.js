@@ -262,6 +262,42 @@ app.get('/busca-respuesta', (req, res) => {
         });
       });
 
+  // Ruta para actualizar la tabla capitulos con los totales.:::::::::::::::::::
+// Define la ruta para actualizar el registro
+app.put('/update-capitulo', (req, res) => {
+    const { letra, maximo, calif, porcen } = req.body;
+
+    // Verifica que los valores necesarios están presentes en el cuerpo de la solicitud
+    if (letra === undefined || maximo === undefined || calif === undefined || porcen === undefined) {
+        return res.status(400).send('Faltan parámetros necesarios');
+    }
+
+    // Consulta de actualización
+    const query = `
+        UPDATE capitulos
+        SET maximoCap = ?, calificaCap = ?, porcenCap = ?
+        WHERE letra = ?
+    `;
+
+    // Ejecuta la consulta de actualización
+
+    conexion.query(query, [maximo, calif, porcen, letra], (err, results) => {
+        if (err) {
+            console.error('Error ejecutando la consulta:', err.stack);
+            return res.status(500).send('Error al actualizar el registro');
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).send(`No se encontró ningún registro con la letra ${letra}`);
+        }
+
+        res.send('Registro actualizado correctamente');
+    });
+});
+
+
+
+
 
 // app.get('/obtenerRespuestas', (req, res) => {
 //     const consulta = 'SELECT * FROM respuestas WHERE id = 5';

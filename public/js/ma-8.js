@@ -161,7 +161,6 @@ function continuar() {
 
   grabarResultados2(respuestas)
     .then(() => {
-      alert("ahora llama al menu-15");
       window.location.href =
         JSON.parse(localStorage.getItem("idioma")) == 1
           ? "MA-9.html"
@@ -169,7 +168,7 @@ function continuar() {
     })
     .catch((error) => {
       console.error("Error en grabarResultados:", error);
-      alert("Hubo un error al grabar los resultados: " + error.message);
+      alert("Reingrese a la aplicación.   Gracias.");
     });
 }
 
@@ -206,7 +205,7 @@ async function grabarResultados2(respuestas) {
     }
   } catch (error) {
     console.log("Error:", error);
-    alert("estamos en el error (ins 2): " + error.message);
+    alert("El proceso requiere que registre nuevamente sus credenciales" + error.message);
     throw error; // Rechaza la promesa en caso de error
   }
 }
