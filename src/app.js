@@ -196,7 +196,7 @@ app.get('/protected', (req, res) => {
 app.get('/secciones', (req, res) => {
     // obtiene el indice de la consulta
     const indice = parseInt(req.query.indice) || 0;
-    console.log (`el indice leido en /secciones:  ${indice}`)
+    // console.log (`el indice leido en /secciones:  ${indice}`)
     const query = 'SELECT * FROM secciones WHERE seccion = ?';
   
     conexion.query(query, [indice], (error, results, fields) => {
@@ -206,6 +206,65 @@ app.get('/secciones', (req, res) => {
           return;
         }
     
+        // Verificar si hay al menos un registro
+        if (results.length > 0) {
+          res.json(results);
+        } else {
+          res.status(404).json({ error: 'No se encontraron registros' });
+        }
+      });
+    });
+
+
+// Ruta para obtener los registros de la tabla capitulos ::::::::::::::::::::
+
+app.get('/capitulos', (req, res) => {
+    // obtiene el indice de la consulta
+    const indice = parseInt(req.query.indice) || 0;
+    // console.log (`el indice leido en /secciones:  ${indice}`)
+    const query = 'SELECT * FROM capitulos WHERE ID = ?';
+  
+    conexion.query(query, [indice], (error, results, fields) => {
+        if (error) {
+          res.status(500).json({ error: 'Error al obtener los registros' });
+          console.log("error servidor al obtener registros");
+          return;
+        }
+    
+        // Verificar si hay al menos un registro
+        if (results.length > 0) {
+          res.json(results);
+        } else {
+          res.status(404).json({ error: 'No se encontraron registros' });
+        }
+      });
+    });
+
+
+// Ruta para obtener los totales de la tabla totalcapitulos ::::::::::::::::::::
+
+app.get('/totalCapitulos', (req, res) => {
+    // obtiene el indice de la consulta
+    const CUIT = req.query.CUIT;
+    const capitulo = req.query.capitulo;
+
+    if (!CUIT || !capitulo) {
+        res.status(400).json({ error: 'Faltan parámetros CUIT o capitulo' });
+        return;
+      }
+
+    console.log(`Recibido CUIT: ${CUIT}, capitulo: ${capitulo}`);
+
+    const query = 'SELECT * FROM totalcapitulos WHERE CUIT = ? AND capitulo = ?';
+  
+    conexion.query(query, [CUIT, capitulo], (error, results, fields) => {
+        if (error) {
+          res.status(500).json({ error: 'Error al obtener los registros' });
+          console.log("error servidor al obtener registros");
+          return;
+        }
+        console.log('Resultados de la consulta:', results);
+        
         // Verificar si hay al menos un registro
         if (results.length > 0) {
           res.json(results);
@@ -243,7 +302,7 @@ app.get('/busca-respuesta', (req, res) => {
       }
     const query = 'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ? AND seccion = ?';
     const values = [CUIT, capitulo, seccion];
-    console.log(`valores que busca: ${values}`)
+    // console.log(`valores que busca: ${values}`)
 
     conexion.query(query, values, (error, results, fields) => {
         if (error) {
@@ -253,7 +312,7 @@ app.get('/busca-respuesta', (req, res) => {
         }
 
         if (results.length > 0) {
-            console.log (`encontro respuesta para seccion ${seccion}`)
+            // console.log (`encontro respuesta para seccion ${seccion}`)
             res.json({ exists: true, score: results[0].score });
           } else {
             console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
@@ -263,40 +322,38 @@ app.get('/busca-respuesta', (req, res) => {
       });
 
   // Ruta para actualizar la tabla capitulos con los totales.:::::::::::::::::::
-// Define la ruta para actualizar el registro
-app.put('/update-capitulo', (req, res) => {
-    const { letra, maximo, calif, porcen } = req.body;
 
-    // Verifica que los valores necesarios están presentes en el cuerpo de la solicitud
-    if (letra === undefined || maximo === undefined || calif === undefined || porcen === undefined) {
-        return res.status(400).send('Faltan parámetros necesarios');
+// Inserción de registros en MySQL opcion 2 :::::::::::::::::::::::::::::::::::::
+app.post('/total-Capitulo', (req, res) => {
+    if (!req.session.user){
+        return res.status(401).json({ error: 'No estás autenticado' });
     }
 
-    // Consulta de actualización
-    const query = `
-        UPDATE capitulos
-        SET maximoCap = ?, calificaCap = ?, porcenCap = ?
-        WHERE letra = ?
-    `;
+    const { capitulo, maximo, score, porcentaje } = req.body;
+    const usuario = req.session.user.username; // Obtener el usuario de la sesión
+    const CUIT = req.session.user.CUIT; // Obtiene el cuit
 
-    // Ejecuta la consulta de actualización
+    if (!usuario) {
+        return res.status(400).json({ error: 'Usuario no definido en la sesión' });
+    }
 
-    conexion.query(query, [maximo, calif, porcen, letra], (err, results) => {
-        if (err) {
-            console.error('Error ejecutando la consulta:', err.stack);
-            return res.status(500).send('Error al actualizar el registro');
+    const nuevoTotal = 'INSERT INTO totalcapitulos (CUIT, capitulo, maximo, score, porcentaje) VALUES (?, ?, ?, ?, ?)';
+    const datosAPasar = [CUIT, capitulo, maximo, score, porcentaje];
+
+    conexion.query(nuevoTotal, datosAPasar, function (error, lista) {
+        if (error) {
+            if (error.code === 'ER_DUP_ENTRY') {
+                console.log('Ya existe una respuesta para esta combinación de CUIT y Capitulo - sigue normal');                // Manejar el error de duplicación
+            } else {
+            console.log('Error:', error);
+            res.status(500).json({ error: error.message });
         }
-
-        if (results.affectedRows === 0) {
-            return res.status(404).send(`No se encontró ningún registro con la letra ${letra}`);
+        } else {
+            console.log(lista.insertId, lista.fieldCount);
+            res.status(200).json({ success: true });
         }
-
-        res.send('Registro actualizado correctamente');
     });
 });
-
-
-
 
 
 // app.get('/obtenerRespuestas', (req, res) => {

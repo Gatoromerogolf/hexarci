@@ -1,13 +1,107 @@
 let tablaMenuA = [];
+let tablaMenuEs = [];
+let primeraVez = 0;
+let pagina = '';
 
-let tablaMenuEs = [
-  ["A.",
-    // "MA-1.html",
-    "Menu-A.html",
-    "Gobierno Corporativo",
-    ,
-    ,
-  ],
+// Función principal que controla la secuencia
+async function procesarCapitulos() {
+  for (let i = 1; i < 7; i++) {
+    await leeCapitulos(i); // Espera a que cada llamada se complete antes de proceder
+  }
+  console.log('Proceso completado:', tablaMenuEs);
+  completarHtml(); // Llama a completarHtml después de procesar todos los capítulos
+}
+
+async function leeCapitulos(indice) {
+  try {
+    const respuesta = await fetch(`/capitulos?indice=${indice}`);
+
+    if (!respuesta.ok) {
+      console.log (`Error en lectura de capitulos`);
+      return;
+    }
+
+    const capitulos = await respuesta.json();
+    if (capitulos.length > 0) {
+      const capLeido = capitulos [0];
+      const CUIT = localStorage.getItem('CUIT');
+      const capitulo = capLeido.letra;
+      const nombre = capLeido.nombre;
+      pagina = capLeido.paginaCap;
+
+      try {
+        const data = await obtenerTotalCapitulos(CUIT, capitulo)
+      // .then(data => {
+        // console.log (`datos recibidos desde la funcion: ${JSON.stringify(data)}`)
+        // let pagina = ''; // Declara pagina fuera del bloque if-else
+
+        if (data && data.length > 0) {
+          const { CUIT, capitulo, maximo, score, porcentaje } = data[0]; // Desestructura los valores
+          // console.log (`cuit: ${CUIT}, capitulo: ${capitulo}, maximo: ${maximo}, score: ${score}, porcentaje: ${porcentaje}`)
+
+          const elemento = [
+            capitulo,
+            '##',
+            nombre,
+            maximo,
+            score,
+            porcentaje
+          ];
+          tablaMenuEs.push(elemento);
+          // console.log (`elemento con totales: ${elemento}`)
+
+          }
+          else {
+          // Si no hay totales, maneja el caso especial
+            const elemento = [
+              capitulo,
+              '##',
+              nombre,
+              null,
+              null,
+              null,
+            ];
+            if (primeraVez == 0) {
+              elemento[1] = pagina;
+              primeraVez = 1;
+            }
+            tablaMenuEs.push(elemento);
+            // console.log (`elemento por no tener total: ${elemento}`)
+            }              
+          }
+        catch(error) {
+        console.error('Error al obtener los datos:', error);
+        };
+      }
+    } catch (error) {
+    console.error('Error en la solicitud:', error);
+  }
+}
+
+async function obtenerTotalCapitulos(CUIT, capitulo) {
+  try {
+    const response = await fetch(`/totalCapitulos?CUIT=${CUIT}&capitulo=${capitulo}`);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Datos obtenidos:', data);
+      return data; // Devuelve los datos obtenidos si la respuesta es exitosa
+    } else {
+            // Si la respuesta no es exitosa, retorna null
+      console.error('Error en la respuesta:', response.status, response.statusText);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error en la solicitud:', error);
+    return null;
+  }
+}
+
+procesarCapitulos();
+
+
+/*
+
   ["B.",
     "Menu-ape-rie.html",
     "Apetito de Riesgo",
@@ -112,6 +206,9 @@ for (i = 0; i < tablaMenuA.length; i++) {
   tablaMenuA[i][5] = 0;
 }
 
+
+
+
 tablaMenuA[0][3] = JSON.parse(localStorage.getItem('maximo-A'));
 tablaMenuA[0][4] = JSON.parse(localStorage.getItem('valores-A'));
 tablaMenuA[0][5] = JSON.parse(localStorage.getItem('porciento-A'));
@@ -153,55 +250,93 @@ if (tablaMenuA[6][4] > 0) {
 //let lineaDatosFd = document.getElementById("lineaMenu");
 //let lineaDatosFd = document.getElementById("tablaIndice");
 let tablaIndice = document.getElementById("tablaIndiceCapitulos");
+*/
 
-for (i = 0; i < tablaMenuA.length; i++) {
-  //lineaDatosFd = tablaIndice.insertRow();
-  let lineaDatosFd = tablaIndice.insertRow();  
+function completarHtml() {
 
-  let celdaNombre = lineaDatosFd.insertCell(-1);
-  celdaNombre.textContent = tablaMenuA[i][0];
+  let totmaximo = 0;
+  let totcalif = 0;
+  let totporcien = 0;
 
-  // Crear la segunda celda (columna) como un enlace:
-  // un elemento <a> con el valor de tablaMenuA[i][1]
-  // como su atributo href, y luego lo agregamos como hijo de la celda de enlace (celdaEnlace). 
+  const elemento = [
+    null,
+    null,
+    'Resumen General:',
+    null,
+    null,
+    null
+  ];
+  tablaMenuEs.push(elemento);
 
-  const celdaEnlace = lineaDatosFd.insertCell(-1);
-  const enlace = document.createElement('a'); // Crear un elemento <a>
-  enlace.href = tablaMenuA[i][1]; // Establecer el atributo href con el valor correspondiente
-  enlace.textContent = tablaMenuA[i][2]; // Establecer el texto del enlace con el tercer elemento de la tabla
-  enlace.style.textDecoration = 'none';
-    // Agregar el enlace como hijo de la celda
-  if (i == tablaMenuA.length-1){
-    enlace.style.fontSize = '18px'; // Cambiar el tamaño de la fuente
-    enlace.style.fontWeight = 'bold'; // Hacer el texto en negrita
-    enlace.style.color='black';
+  tablaMenuA = tablaMenuEs;
+  console.table(tablaMenuA);
 
-    celdaEnlace.style.textAlign = 'center'; // Centrar el contenido horizontalmente
-    celdaEnlace.style.display = 'flex';
-    celdaEnlace.style.justifyContent = 'center';
-    celdaEnlace.style.alignItems = 'center';
-  }  
-  celdaEnlace.appendChild(enlace); 
-  
+  let tablaIndice = document.getElementById("tablaIndiceCapitulos");
+  for (i = 0; i < tablaMenuA.length; i++) {
+    //lineaDatosFd = tablaIndice.insertRow();
+    let lineaDatosFd = tablaIndice.insertRow();  
 
-  celdaMaximo = lineaDatosFd.insertCell(-1);
-  if (tablaMenuA[i][3] === 0) {
-    tablaMenuA[i][3] = ""
-  }
-  celdaMaximo.textContent = tablaMenuA[i][3];
-  celdaMaximo.classList.add('ajustado-derecha');
+    let celdaNombre = lineaDatosFd.insertCell(-1);
+    celdaNombre.textContent = tablaMenuA[i][0];
 
-  celdaPuntos = lineaDatosFd.insertCell(-1);
-  if (tablaMenuA[i][4] === 0) {
-    tablaMenuA[i][4] = ""
-  }
-  celdaPuntos.textContent = tablaMenuA[i][4];
-  celdaPuntos.classList.add('ajustado-derecha');
+    // Crear la segunda celda (columna) como un enlace:
+    // un elemento <a> con el valor de tablaMenuA[i][1]
+    // como su atributo href, y luego lo agregamos como hijo de la celda de enlace (celdaEnlace). 
 
-  celdaPorciento = lineaDatosFd.insertCell(-1);
-  if (tablaMenuA[i][5] === 0) {
-    tablaMenuA[i][5] = ""
-  }
-  celdaPorciento.textContent = tablaMenuA[i][5];
-  celdaPorciento.classList.add('ajustado-derecha');
-}
+    const celdaEnlace = lineaDatosFd.insertCell(-1);
+    const enlace = document.createElement('a'); // Crear un elemento <a>
+    enlace.href = tablaMenuA[i][1]; // Establecer el atributo href con el valor correspondiente
+    enlace.textContent = tablaMenuA[i][2]; // Establecer el texto del enlace con el tercer elemento de la tabla
+    enlace.style.textDecoration = 'none';
+
+      // Agregar el enlace como hijo de la celda
+    if (i == tablaMenuA.length-1){
+      enlace.style.fontSize = '18px'; // Cambiar el tamaño de la fuente
+      enlace.style.fontWeight = 'bold'; // Hacer el texto en negrita
+      enlace.style.color='black';
+
+      celdaEnlace.style.textAlign = 'center'; // Centrar el contenido horizontalmente
+      celdaEnlace.style.display = 'flex';
+      celdaEnlace.style.justifyContent = 'center';
+      celdaEnlace.style.alignItems = 'center';
+    }  
+    celdaEnlace.appendChild(enlace); 
+    
+    celdaMaximo = lineaDatosFd.insertCell(-1);
+    if (tablaMenuA[i][3] === 0) {
+      tablaMenuA[i][3] = ""
+    }
+    celdaMaximo.textContent = tablaMenuA[i][3];
+    celdaMaximo.classList.add('ajustado-derecha');
+    totmaximo += tablaMenuA[i][3];
+
+    celdaPuntos = lineaDatosFd.insertCell(-1);
+    if (tablaMenuA[i][4] === 0) {
+      tablaMenuA[i][4] = ""
+    }
+    celdaPuntos.textContent = tablaMenuA[i][4];
+    celdaPuntos.classList.add('ajustado-derecha');
+    // totcalif = totcalif.toFixed(2);
+    totcalif += Number(tablaMenuA[i][4]);
+
+
+    celdaPorciento = lineaDatosFd.insertCell(-1);
+    if (tablaMenuA[i][5] === 0) {
+      tablaMenuA[i][5] = ""
+    }
+    celdaPorciento.textContent = tablaMenuA[i][5];
+    celdaPorciento.classList.add('ajustado-derecha');
+
+    if (i == tablaMenuA.length-1){
+      let formattedmaximo = Number(totmaximo).toLocaleString('es-ES'); // 'es-ES' para formato español (punto decimal y coma de mil)
+      celdaMaximo.textContent = formattedmaximo;
+
+      // let formattedcalif = Number(totcalif).toLocaleString('es-ES'); // 'es-ES' para 
+      // celdaPuntos.textContent = formattedcalif;
+      totcalif = totcalif.toFixed(2);      
+      celdaPuntos.textContent = totcalif;
+
+      celdaPorciento.style.fontWeight = 'bold'; // Hacer el texto en negrita
+      celdaPorciento.textContent = ((totcalif / totmaximo)*100).toFixed(2);
+    }
+}}

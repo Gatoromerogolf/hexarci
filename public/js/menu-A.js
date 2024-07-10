@@ -18,14 +18,13 @@ async function obtenerSecciones(indice) {
       const seccionRec = await response.json(); //registro seccion recibido
       if (seccionRec.length > 0) {
         const primerSeccion = seccionRec[0];
-        console.log (primerSeccion)
-        console.log (primerSeccion.max4)
+        // console.log (primerSeccion)
+        // console.log (primerSeccion.max4)
         // leo la tabla de respuestas para saber si se completó
         const CUIT = localStorage.getItem('CUIT');
         const capitulo = "A";
         const seccion = primerSeccion.seccion;
 
-        // localStorage.setItem("3o4Direct", JSON.stringify(respuestas[0]));
         const direct3o4 = 'direct3o4';
         const direc34 = localStorage.getItem(direct3o4) || 2;
         
@@ -204,19 +203,19 @@ function actualizarHTML(tablaMenuEs) {
 
     localStorage.setItem('porciento-A', totalPor)
 
-    const letra = "A";  
-    actualizaCapitulos(letra, totalMax, totalCal, totalPor)
+    const capitulo = "A";  
+    actualizaCapitulos(capitulo, totalMax, totalCal, totalPor)
     // const var1 = JSON.parse(localStorage.getItem('porciento-A'));
     }
 }
 
-function actualizaCapitulos (letra, maximo, calif, porcen){
-  fetch('/update-capitulo', {
-    method: 'PUT',
+function actualizaCapitulos (capitulo, maximo, score, porcentaje){
+  fetch('/total-Capitulo', {
+    method: 'POST',
     headers: {
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ letra, maximo, calif, porcen })
+    body: JSON.stringify({ capitulo, maximo, score, porcentaje })
 })
 .then(response => {
     if (!response.ok) {
@@ -229,7 +228,7 @@ function actualizaCapitulos (letra, maximo, calif, porcen){
     console.log(data);
 })
 .catch(error => {
-    alert('Hubo un problema con la actualización');
+    alert('Actualiza Capitulos - Hubo un problema con la actualización');
     console.error(error);
 });
 };
