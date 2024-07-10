@@ -47,27 +47,28 @@ conexion.connect(function (err) {
 });
 
 // Inserción de registros en MySQL ::::::::::::::::::::::::::::::::::::::::::
-app.post('/insertar', (req, res) => {
-    if (!req.session.user){
-        return res.status(401).json({ error: 'No estás autenticado' });
-    }
+// app.post('/insertar', (req, res) => {
+//     if (!req.session.user){
+//         return res.status(401).json({ error: 'No estás autenticado' });
+//     }
 
-    const { CUIT, capitulo, datos } = req.body;
-    const usuario = req.session.user.username; // Obtener el usuario de la sesión
+//     const { CUIT, capitulo, datos } = req.body;
+//     const usuario = req.session.user.username; // Obtener el usuario de la sesión
 
-    const nuevoResultado = 'INSERT INTO a15 (clave, CUIT, usuario, capitulo, datos) VALUES (NULL, ?, ?, ?, ?)';
-    const datosAPasar = [CUIT, usuario, capitulo, datos];
+//     const nuevoResultado = 'INSERT INTO a15 (clave, CUIT, usuario, capitulo, datos) VALUES (NULL, ?, ?, ?, ?)';
+//     const datosAPasar = [CUIT, usuario, capitulo, datos];
 
-    conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
-        if (error) {
-            console.log('Error:', error);
-            res.status(500).json({ error: error.message });
-        } else {
-            console.log(lista.insertId, lista.fieldCount);
-            res.status(200).json({ success: true });
-        }
-    });
-});
+//     conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
+//         if (error) {
+//             console.log('Error:', error);
+//             res.status(500).json({ error: error.message });
+//         } else {
+//             console.log(lista.insertId, lista.fieldCount);
+//             res.status(200).json({ success: true });
+//         }
+//     });
+// });
+
 
 // Inserción de registros en MySQL opcion 2 :::::::::::::::::::::::::::::::::::::
 app.post('/insertar2', (req, res) => {
@@ -112,31 +113,31 @@ app.post('/insertar2', (req, res) => {
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  PARA RECUPERAR DATOS JSON DE MYSQL
 
-app.get('/obtenerRespuestas', (req, res) => {
-    const consulta = 'SELECT * FROM respuestas WHERE id = 5';
+// app.get('/obtenerRespuestas', (req, res) => {
+//     const consulta = 'SELECT * FROM respuestas WHERE id = 5';
 
-    conexion.query(consulta, function (error, resultados) {
-        if (error) {
-            console.log('Error:', error);
-            res.status(500).json({ error: error.message });
-        } else {
-            if (resultados.length > 0) {
-                const resultado = resultados[0];
-                try {
-                    // Verificar si el campo `respuesta` es una cadena JSON válida
-                    resultado.respuesta = JSON.parse(resultado.respuesta);
-                } catch (e) {
-                    console.log('Error al parsear JSON:', e);
-                    res.status(500).json({ error: 'Error al parsear el campo respuesta' });
-                    return;
-                }
-                res.status(200).json(resultado);
-            } else {
-                res.status(404).json({ error: 'Registro no encontrado' });
-            }
-        }
-    });
-});
+//     conexion.query(consulta, function (error, resultados) {
+//         if (error) {
+//             console.log('Error:', error);
+//             res.status(500).json({ error: error.message });
+//         } else {
+//             if (resultados.length > 0) {
+//                 const resultado = resultados[0];
+//                 try {
+//                     // Verificar si el campo `respuesta` es una cadena JSON válida
+//                     resultado.respuesta = JSON.parse(resultado.respuesta);
+//                 } catch (e) {
+//                     console.log('Error al parsear JSON:', e);
+//                     res.status(500).json({ error: 'Error al parsear el campo respuesta' });
+//                     return;
+//                 }
+//                 res.status(200).json(resultado);
+//             } else {
+//                 res.status(404).json({ error: 'Registro no encontrado' });
+//             }
+//         }
+//     });
+// });
 
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
