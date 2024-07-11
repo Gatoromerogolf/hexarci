@@ -253,73 +253,74 @@ procesarCapitulos();
 
 
 
-/*
-//  crear un evento para que cuando haga click en la pagina, corra estas funciones.
-
-Luego, usa jsPDF para crear el PDF a partir de los datos obtenidos:
 
 async function generarPDF() {
     const datos = await obtenerDatos();
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // Agregar título
-    doc.setFontSize(18);
-    doc.text('Informe de Datos', 10, 10);
-
-    // Agregar tabla de datos
-    let inicioY = 20;
-    datos.forEach((fila, index) => {
-        doc.setFontSize(12);
-        doc.text(`${index + 1}. ${JSON.stringify(fila)}`, 10, inicioY);
-        inicioY += 10;
-    });
-
-    // Guardar el PDF
-    doc.save('informe.pdf');
-}
-
-// Llamar a la función para generar el PDF
-// generarPDF();
-
-// Mejora: Formatear la Tabla de Datos
-// Para una mejor presentación de los datos, puedes formatear la tabla de manera más sofisticada. Aquí tienes un ejemplo más avanzado usando autoTable de jsPDF:*/
-
-async function generarPDF() {
-    const datos = await obtenerDatos();
+    console.log(datos);
+    // const datosRpta = await cambiarDatos(datos);
+    await cambiarDatos(datos);
+    console.log(datos);
 
     // Inicializar jsPDF
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-      // Extraer CUIT y usuario del primer registro
-    const { CUIT, usuario } = datos[0];
-
     // Agregar título
-    doc.setFontSize(18);
-    doc.text(`Informe de Datos para CUIT: ${CUIT} Usuario: ${usuario}`, 10, 10);
+    const CUIT = localStorage.getItem('CUIT');
+    const usuario = localStorage.getItem('nombre');
 
-        // Configurar columnas para autoTable
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor('#007bff'); // Color azul brillante
+
+    doc.text(`------------------- Informe de Datos para CUIT: ${CUIT},   Usuario: ${usuario} \n \n GOBIERNO CORPORATIVO`, 10, 10);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor('#0000ff'); // Color azul brillante
+    doc.text(`\n\n C: Capitulo, S: Sección, Nro: Número`, 10, 20);
+
     const columnas = [
-      { title: "ID", dataKey: "ID" },
-      // { title: "CUIT", dataKey: "CUIT" },
-      // { title: "Usuario", dataKey: "usuario" },
-      { title: "Capítulo", dataKey: "capitulo" },
-      { title: "Sección", dataKey: "seccion" },
-      { title: "Score", dataKey: "score" },
-      { title: "Respuesta", dataKey: "respuesta" },
-      // { title: "Fecha de Registro", dataKey: "fecharegistro" }
+      { title: "C", dataKey: "Capitulo" },
+      { title: "S", dataKey: "seccionRomano" },
+      { title: "N", dataKey: "Numero" },
+      { title: "Afirmacion", dataKey: "Descrip" },
+      { title: "TR", dataKey: "tipo" },
+      { title: "Respuesta", dataKey: "respta" },      
     ];
-    // Agregar tabla de datos
 
+
+      // Configurar estilos de columna para autoTable
+    const columnStyles = {
+      Capitulo: { cellWidth: 10 }, // Establecer el ancho de la columna 
+      seccionRomano: { cellWidth: 10 },  // Establecer el ancho de la 
+      Numero: { cellWidth: 10 }, // Establecer el ancho de la columna 
+      Descrip: { cellWidth: 20 },  // Establecer el ancho de la columna 
+      tipo: { cellWidth: 5 },  // Establecer el ancho de la columna 
+      respta: { cellWidth: 20 },  // Establecer el ancho de la columna 
+    };
+
+      // Función para mapear y transformar datos
+    // const transformarDatos = datos.map(row => ({
+    //   ...row,
+    //   tipo: row.tipo === 1 ? "SI" : row.tipo // Reemplazar 1 por "SI" y 0 por "NO"
+    // }));
+    //Función transformarDatos: Se utiliza map para iterar sobre los datos (datos) y crear una nueva estructura de datos (transformarDatos). En esta nueva estructura, se mapean los valores de cada fila (row). Para el campo tipo, se realiza una condición (row.tipo === 1 ? "SI" : "NO") para asignar "SI" si row.tipo es 1 y "NO" si es 0.
+
+    //Uso de transformarDatos en autoTable: En lugar de pasar directamente datos al body de autoTable, ahora se pasa transformarDatos. Esto asegura que los valores transformados (con "SI" o "NO" en lugar de 1 o 0 en el campo tipo) se impriman en la tabla.
+
+
+    // Agregar tabla de datos con ajuste de texto
     doc.autoTable({
-      startY: 20,
+      startY: 30,
       head: [columnas.map(col => col.title)],
-      body: datos.map(row => columnas.map(col => row[col.dataKey]))
+      body: datos.map(row => columnas.map(col => row[col.dataKey])),
+      columnStyles: columnStyles, // Aplicar estilos de columna
+      styles: { overflow: 'linebreak' } // Ajuste de texto
   });
 
-    // Guardar el PDF
-    // doc.save('informe.pdf');
+
+    // Guardar el PDF :  doc.save('informe.pdf');
     // Convertir el PDF a un Blob
     const pdfBlob = doc.output('blob');
 
@@ -336,18 +337,9 @@ async function generarPDF() {
 }
 
 
-// async function obtenerDatos() {
-//   // Simulación de una llamada a una API o consulta a base de datos
-//   return [
-//       { ID: 1, CUIT: '20123456789', usuario: 'Usuario1', capitulo: 'A1', seccion: '01', score: 10, respuesta: '{"respuesta": "valor"}', fecharegistro: '2024-07-10 10:00:00' },
-//       { ID: 2, CUIT: '20987654321', usuario: 'Usuario2', capitulo: 'B2', seccion: '02', score: 20, respuesta: '{"respuesta": "valor"}', fecharegistro: '2024-07-11 11:00:00' }
-//       // Más registros...
-//   ];
-// }
-
 async function obtenerDatos() {
   try {
-    const response = await fetch('/respuestas');
+    const response = await fetch('/preguntas');
     if (response.ok) {
       const result = await response.json();
       // Devolver directamente los datos recibidos
@@ -362,10 +354,79 @@ async function obtenerDatos() {
   }
 }
 
-/*
-// Llamar a la función para generar el PDF
-generarPDF();
+async function cambiarDatos(datos) {
+  datos.forEach(fila => {
+    // Verificar si el Numero es igual al valor buscado
+    if (fila.tipo === 1) {
+        // Agregar el campo Referencia
+        busca1SiNo();
+        fila.respta = "SI";
+    } else {
+      if (fila.tipo === 2) {
+        busca2Por(fila);
 
-Resumen
-Estos pasos te permiten obtener datos de una base de datos MySQL, enviarlos al frontend y generar un informe en PDF usando jsPDF. Ajusta el código según tus necesidades específicas y el formato de tus datos.
-*/
+      } else {
+        if (fila.tipo === 3) {
+          busca3Nume();
+          fila.respta = fila.tipo
+        } else {
+          if (fila.tipo === 4) {
+            busca4Check()
+            fila.respta = "texto encadenado"
+          }
+          else {
+            busca5Varios()
+            fila.respta = "4 o más"
+          }
+        }
+      }
+    }
+})
+
+}
+
+async function busca1SiNo(){
+
+}
+
+async function busca2Por(fila) {
+  switch (fila.tipo) {
+      case 1:
+          fila.respta = "No";
+          break;
+      case 2:
+          fila.respta = "50%";
+          break;
+      case 3:
+          fila.respta = "75%";
+          break;
+      default:
+          fila.respta = "100%";
+          break;
+  }
+}
+
+async function busca3Nume(){
+
+}
+
+async function busca4Check(){
+
+}
+
+async function busca5Varios(){
+
+}
+
+
+// // leer la respuesta para ese CUIT - capitulo - seccion
+// //  busca-respuesta-full
+
+// const preguntas = await obtenerDatos(); // recupera todas las preguntas
+
+// console.log(preguntas)
+
+// const respuestas = await 
+
+
+

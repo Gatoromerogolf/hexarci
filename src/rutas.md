@@ -8,7 +8,7 @@ app.post('*/insertar2*', (req, res) => {
     **tabla: respuestas**
     inserta: `'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, score, respuesta)`
 
-###  PARA RECUPERAR DATOS JSON DE MYSQL ::::::::::::::::no se usa::::::::::
+###  PARA RECUPERAR DATOS JSON DE MYSQL ::::::::::no se usa::::::::::
 app.get('*/obtenerRespuestas*', (req, res) => {
     **tabla: respuestas**
     recupera por un dato en particular; `'SELECT * FROM respuestas WHERE id = 5'`
@@ -22,6 +22,13 @@ app.get('*/respuestas*', (req, res) => {
 app.get('*/busca-respuesta*', (req, res) => {
         **tabla: respuestas**
         recupera: por CUIT, capitulo y sección: `'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ? AND seccion = ?'`;
+        solo devuelve 'score'
+
+### Ruta para saber si existe respuesta para la seccion ::::::::::::::::::::
+app.get('*/busca-respuesta-full*', (req, res) => {
+        **tabla: respuestas**
+        recupera: por CUIT, capitulo y sección: `'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ? AND seccion = ?'`;
+        devuelve 'record' con todos los campos
 
 ### Ruta para obtener todos los registros de la tabla secciones ::::::::::::::::::::
 app.get('*/secciones*', (req, res) => {

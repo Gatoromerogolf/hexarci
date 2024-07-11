@@ -290,6 +290,20 @@ app.get('/respuestas', (req, res) => {
     });
   });
 
+
+    // Ruta para obtener todos las preguntas de la tabla ::::::::::::::::::::
+
+app.get('/preguntas', (req, res) => {
+  const query = 'SELECT * FROM preguntas';
+
+  conexion.query(query, (error, results, fields) => {
+    if (error) {
+      res.status(500).json({ error: 'Error al obtener los registros' });
+      return;
+    }
+    res.json(results);
+  });
+});
   // Ruta para saber si existe respuesta para la seccion ::::::::::::::::::::
 
 app.get('/busca-respuesta', (req, res) => {
@@ -321,6 +335,39 @@ app.get('/busca-respuesta', (req, res) => {
           }
         });
       });
+
+
+app.get('/busca-respuesta-full', (req, res) => {
+  const { CUIT, capitulo, seccion } = req.query;
+
+  if (!CUIT || !capitulo || !seccion) {
+      res.status(400).json({ error: 'Faltan parámetros requeridos' });
+      console.log (`valores CUIT ${CUIT}, capitulo ${capitulo}, seccion ${seccion}`)
+      console.log (`salio en error por aca`)
+      return;
+    }
+  const query = 'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ? AND seccion = ?';
+  const values = [CUIT, capitulo, seccion];
+  // console.log(`valores que busca: ${values}`)
+
+  conexion.query(query, values, (error, results, fields) => {
+      if (error) {
+          console.log ('primer error en el query')
+        res.status(500).json({ error: 'Error al buscar el registro' });
+        return;
+      }
+
+      if (results.length > 0) {
+          // console.log (`encontro respuesta para seccion ${seccion}`)
+          res.json({ exists: true, record: results[0]});
+        } else {
+          console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
+          res.json({ exists: false });
+        }
+      });
+    });
+
+
 
   // Ruta para actualizar la tabla capitulos con los totales.:::::::::::::::::::
 
