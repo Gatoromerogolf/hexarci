@@ -193,7 +193,6 @@ app.get('/protected', (req, res) => {
 });
 
 // Ruta para obtener todos los registros de la tabla secciones ::::::::::::::::::::
-
 app.get('/secciones', (req, res) => {
     // obtiene el indice de la consulta
     const indice = parseInt(req.query.indice) || 0;
@@ -218,7 +217,6 @@ app.get('/secciones', (req, res) => {
 
 
 // Ruta para obtener los registros de la tabla capitulos ::::::::::::::::::::
-
 app.get('/capitulos', (req, res) => {
     // obtiene el indice de la consulta
     const indice = parseInt(req.query.indice) || 0;
@@ -241,9 +239,7 @@ app.get('/capitulos', (req, res) => {
       });
     });
 
-
 // Ruta para obtener los totales de la tabla totalcapitulos ::::::::::::::::::::
-
 app.get('/totalCapitulos', (req, res) => {
     // obtiene el indice de la consulta
     const CUIT = req.query.CUIT;
@@ -275,9 +271,7 @@ app.get('/totalCapitulos', (req, res) => {
       });
     });
 
-
-  // Ruta para obtener todos las respuestas de la tabla ::::::::::::::::::::
-
+// Ruta para obtener todos las respuestas de la tabla ::::::::::::::::::::
 app.get('/respuestas', (req, res) => {
     const query = 'SELECT * FROM respuestas';
   
@@ -290,9 +284,7 @@ app.get('/respuestas', (req, res) => {
     });
   });
 
-
-    // Ruta para obtener todos las preguntas de la tabla ::::::::::::::::::::
-
+// Ruta para obtener todos las preguntas de la tabla ::::::::::::::::::::
 app.get('/preguntas', (req, res) => {
   const query = 'SELECT * FROM preguntas';
 
@@ -304,8 +296,8 @@ app.get('/preguntas', (req, res) => {
     res.json(results);
   });
 });
-  // Ruta para saber si existe respuesta para la seccion ::::::::::::::::::::
 
+// Ruta para saber si existe respuesta para la seccion ::::::::::::::::::::
 app.get('/busca-respuesta', (req, res) => {
     const { CUIT, capitulo, seccion } = req.query;
 
@@ -336,40 +328,37 @@ app.get('/busca-respuesta', (req, res) => {
         });
       });
 
+// Ruta para buscar respuestas por cuit y capitulo.:::::::::::::::::::
+app.get('/busca-respuesta-capitulo', (req, res) => {
+  const { CUIT, capitulo } = req.query;
 
-app.get('/busca-respuesta-full', (req, res) => {
-  const { CUIT, capitulo, seccion } = req.query;
-
-  if (!CUIT || !capitulo || !seccion) {
+  if (!CUIT || !capitulo) {
       res.status(400).json({ error: 'Faltan parámetros requeridos' });
-      console.log (`valores CUIT ${CUIT}, capitulo ${capitulo}, seccion ${seccion}`)
+      console.log (`valores CUIT ${CUIT}, capitulo ${capitulo}`)
       console.log (`salio en error por aca`)
       return;
     }
-  const query = 'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ? AND seccion = ?';
-  const values = [CUIT, capitulo, seccion];
-  // console.log(`valores que busca: ${values}`)
+  const query = 'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ?';
+  const values = [CUIT, capitulo];
 
   conexion.query(query, values, (error, results, fields) => {
       if (error) {
-          console.log ('primer error en el query')
+        console.log ('primer error en el query')
         res.status(500).json({ error: 'Error al buscar el registro' });
         return;
       }
-
       if (results.length > 0) {
-          // console.log (`encontro respuesta para seccion ${seccion}`)
-          res.json({ exists: true, record: results[0]});
-        } else {
-          console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
-          res.json({ exists: false });
+        res.json({ exists: true, records: results});
+        console.log('Resultados encontrados busca-respuesta-capitulo - despues json:', results);
+      } else {
+        console.log (`no hay respuesta para CUIT ${CUIT} y capitulo ${capitulo} en busca-respuesta-capitulo`)
+        res.json({ exists: false });
         }
       });
     });
 
 
-
-  // Ruta para actualizar la tabla capitulos con los totales.:::::::::::::::::::
+// Ruta para actualizar la tabla capitulos con los totales.:::::::::::::::::::
 
 // Inserción de registros en MySQL opcion 2 :::::::::::::::::::::::::::::::::::::
 app.post('/total-Capitulo', (req, res) => {
@@ -403,6 +392,34 @@ app.post('/total-Capitulo', (req, res) => {
     });
 });
 
+
+// Ruta para obtener todos las respuestas de la tabla textorespuestas::::::::::::::::::::
+app.get('/textorespuestas', (req, res) => {
+  const query = 'SELECT * FROM textorespuestas';
+
+  conexion.query(query, (error, results, fields) => {
+    if (error) {
+      res.status(500).json({ error: 'Error al obtener los registros' });
+      return;
+    }
+    console.log ('lectura tabla texto:' , results )
+    res.json(results);
+  });
+});
+
+
+// Ruta para obtener todos las respuestas de la tabla textocheck::::::::::::::::::::
+app.get('/textocheck', (req, res) => {
+  const query = 'SELECT * FROM textocheck';
+
+  conexion.query(query, (error, results, fields) => {
+    if (error) {
+      res.status(500).json({ error: 'Error al obtener los registros' });
+      return;
+    }
+    res.json(results);
+  });
+});
 
 // app.get('/obtenerRespuestas', (req, res) => {
 //     const consulta = 'SELECT * FROM respuestas WHERE id = 5';
