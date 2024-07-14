@@ -166,9 +166,17 @@ function calculaResultados() {
     console.log(`i= ${i} ,
          valores ${valores} ,
          tabla: ${tabla[i]},
-         respuesta: ${respuestas[i]},
-         tablarespuesta: ${tabla[i][respuestas[i] - 1]}`);
-    valores += tabla[i][respuestas[i] - 1];
+         respuesta: ${respuestas[i]},`);
+
+    if (i > 0 && i < 7) 
+      {
+        valores += tabla[i][respuestas[i]];
+        console.log(`tablarespuesta:  , ${tabla[i][respuestas[i]]}`);  
+      } else {  
+          valores += tabla[i][respuestas[i] - 1];
+          console.log (`tablarespuesta: ${tabla[i][respuestas[i] - 1]}`)
+        }
+        
     console.log(`valor despues calculo: ${valores}`);
 
     puntajesIndividuales[i][0] = i + 1;

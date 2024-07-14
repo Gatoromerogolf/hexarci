@@ -16,7 +16,7 @@ async function procesarCapitulos() {
   for (let i = 1; i < 7; i++) {
     await leeCapitulos(i); // Espera a que cada llamada se complete antes de proceder
   }
-  console.log('Proceso completado:', tablaMenuEs);
+  // console.log('Proceso completado:', tablaMenuEs);
   completarHtml(); // Llama a completarHtml después de procesar todos los capítulos
 }
 
@@ -71,7 +71,7 @@ async function obtenerTotalCapitulos(CUIT, capitulo) {
 
     if (response.ok) {
       const data = await response.json();
-      console.log('Datos obtenidos:', data);
+      // console.log('Datos obtenidos:', data);
       return data; // Devuelve los datos obtenidos si la respuesta es exitosa
     } else {
             // Si la respuesta no es exitosa, retorna null
@@ -226,8 +226,9 @@ function formatearNumero(numero) {
 
 // recuperarPreguntas();
 recuperarRespuestas(CUIT, capitulo);
-cambiarDatos();
-generarPDF();
+// cambiarDatos();
+// generarPDF();
+// cambiarDatos();
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -236,10 +237,10 @@ async function recuperarPreguntas() {
     const response = await fetch('/preguntas');
     if (response.ok) {
       const result = await response.json();
-      // Devolver directamente los datos recibidos
-      return result;
+      console.log('Datos obtenidos de recuperarPreguntas:', result); // Agrega esta línea para verificar los datos obtenidos
+      return Array.isArray(result) ? result : []; // Asegura devolver un arreglo
     } else {
-      console.error('Error al obtener los datos:', response.status, response.statusText);
+      console.error('Error al obtener las preguntas:', response.statusText);
       return [];
     }
   } catch (error) {
@@ -271,10 +272,11 @@ async function obtenerDatos() {
 
 async function recuperarRespuestas(CUIT, capitulo){
   respuestas = await obtenerRespuestas(CUIT, capitulo);
-  console.log('Respuestas obtenidas -recuperarRespuestas: ', respuestas) // Verifica el valor de 'respuestas'
-  respuestas.forEach((respuesta, index) => {
-    console.log(`Registro ${index + 1}:`, respuesta);
-});}
+//   console.log('Respuestas obtenidas -recuperarRespuestas: ', respuestas) // Verifica el valor de 'respuestas'
+//   respuestas.forEach((respuesta, index) => {
+//     console.log(`Registro ${index + 1}:`, respuesta);
+// });
+}
 // ---------------------------------------------------------
 
 // leo las respuestas del CUIT para el capítulo
@@ -283,7 +285,7 @@ async function obtenerRespuestas(CUIT, capitulo) {
     const response = await fetch(`/busca-respuesta-capitulo?CUIT=${CUIT}&capitulo=${capitulo}`);
     if (response.ok) {
       const result = await response.json();
-      console.log ('muestro result - obtenerRespuestas:  ', result); // Verifica el resultado completo
+      // console.log ('muestro result - obtenerRespuestas:  ', result); // Verifica el resultado completo
       return result.records || []; // Devuelve los registros o un arreglo vacío
     } else {
       console.error(`Sin respuesta para capitulo ${capitulo} en obtenerRespuestas`);
@@ -296,91 +298,124 @@ async function obtenerRespuestas(CUIT, capitulo) {
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-async function cambiarDatos(datos) {
-  // lee tablas textos de respuestas
-  const resultado = await leerTextoRespuestas();
+async function cambiarDatos(lineToPrint) {
+  // lee tablas textos de respuestas (textorespuestas)
 
-  if (!resultado || resultado.length === 0) {
+  if (!Array.isArray(lineToPrint)) {
+    console.error('lineToPrint no es un array:', lineToPrint);
+    return;
+  }
+  // console.log('lineToPrint dentro de cambiarDatos:', lineToPrint); // Verifica el contenido de lineToPrint
+
+  const txtResptas = await leerTextoRespuestas();
+  if (!txtResptas || txtResptas.length === 0) {
     console.error('leerTextoRespuestas no devolvió resultados válidos');
     return;
   }
 
-  const textoRpta = resultado[0].textos;
-  console.log ('xxxxxasdasdasx' , textoRpta);
-  console.log ('xxMMMMMwesdasx' , textoRpta[0]); 
+  // lee tablas textos checklist (textocheck)
+  const txtCheck = await leerTextoCheck();
+  if (!txtCheck || txtCheck.length === 0) {
+    console.error('leerTextoCheck no devolvió resultados válidos');
+    return;
+  }
 
-  const textoCheck = await leerTextoCheck();
-  // console.log ('async function cambiarDatos(datos): ' , textoRpta)
-  // console.log ('async function ..txtocheck): ' , textoCheck)
 
-  datos.forEach(fila => {
-    // fila.Numero es el numero de pregunta, o sea, el indice del array de respuesta.
-    // la respuesta que corresponde es cuit-capitulo-seccion
+  // Analiza cada fila del PDF que es cada pregunta
+  lineToPrint.forEach(fila => {
+    // selecciona la respuesta que tiene los valores de la seccion 
+    // la seccion que se busca es la de la pregunta procesada (fila)
     const respuesta = respuestas.find(respuesta => respuesta.seccion === fila.Seccion);
 
-    // Encuentra el registro en resultado donde pregunta es igual a fila.tipo
-    const otrarpta = resultado.find(item => item.pregunta === fila.tipo)
-    console.log ('SDFSDSDFSDFSDFS' , otrarpta);     
-    console.log ('xxMMMMMwesdasx  segunda parte' , textoRpta[0]); 
+    // // Encuentra el texto de respuestao donde pregunta es igual a fila.tipo
+    // const otrarpta = resultado.find(item => item.pregunta === fila.tipo)
 
-    // Asegúrate de que respuesta y arrayRespuesta existan antes de acceder a ellas
-    // if (respuesta) {
-      const arrayRespuesta = respuesta.respuesta;
-      fila.nroRpt = arrayRespuesta[fila.Numero - 1];
-    // } else {
-    //   console.error(`No se encontró una respuesta para la sección ${fila.Seccion}`);
-    //   return;
-    // }
+    const arrayRespuesta = respuesta.respuesta;
+
+    fila.nroRpt = arrayRespuesta[fila.Numero - 1]
 
     switch (fila.tipo) {
       case 1:
         fila.respta = arrayRespuesta[fila.Numero - 1] == 1 ? "SI" : "NO";
         break;
       case 2:
-        busca2Por(fila);
+        fila.respta = "51 a 55";
         break;
       case 3:
         fila.respta = arrayRespuesta[fila.Numero - 1];
         break;
-      case 4:
-        busca4Check();
-        fila.respta = "texto encadenado";
-        break;
       }
 
     if (fila.tipo > 40 && fila.tipo < 50) {
-          fila.respta = "No sabemos";}
+        // Necesitas encontrar el objeto donde pregunta es igual a 4X
+        let indicesCheck = 0;
+        // if(fila.tipo =  42) {return}
+        console.log ('entro aca por: ' , fila.tipo)
+        const filaCheckRptas = txtCheck.find(item => Number(item.pregunta) === fila.tipo);
+        if (!filaCheckRptas) {
+          console.log("No se encontró ninguna fila con la pregunta:", fila.tipo);
+          return;
+        }
+
+        if (fila.tipo === 42 || fila.tipo === 43) {
+          indicesCheck = arrayRespuesta;
+        } else {
+          indicesCheck = arrayRespuesta[fila.Numero - 1];
+      }
+        console.log('indicesCheck:', indicesCheck);
+
+        let textoConcatenado = "";
+
+        // indicesCheck.forEach(indice => {
+        //   if (indice < filaCheckRptas.textos.length) {
+        //     textoConcatenado += filaCheckRptas.textos[indice - 1];
+        //     textoConcatenado += " - ";
+        //   } else {
+        //     console.error(`Índice ${indice} fuera de los límites del array valores`);
+        //     console.log ('largo filacheckrptas :  ' , filaCheckRptas.textos.length);
+        //   }
+        // });
+
+        indicesCheck.forEach(indice => {
+          if (indice > filaCheckRptas.textos.length) {
+            console.error(`Índice ${indice} fuera de los límites del array valores`);
+            console.log ('largo filacheckrptas :  ' , filaCheckRptas.textos.length);
+          }
+            else {
+              textoConcatenado += filaCheckRptas.textos[indice - 1];
+              textoConcatenado += "  ";
+          } 
+        });
+
+
+
+
+        fila.respta = textoConcatenado
+    }
 
     if (fila.tipo > 50 && fila.tipo < 60) {
-          fila.respta = "entre 50 y 60"
-          // const textoRpta = resultado[fila.tipo].textos;
-          // alert ('algo sale :', textoRpta)
+        // Necesitas encontrar el objeto donde pregunta es igual a 52
+        const filaTxtRptas = txtResptas.find(item => item.pregunta === fila.tipo);
+        if (!filaTxtRptas) {
+          console.log("No se encontró ninguna fila con la pregunta:", fila.tipo);
+        }
+
+        const valTxtRptas = filaTxtRptas.textos;
+        // el indice que da el valor de valTxtRptas es el valor de la respuesta menos 1
+        // el valor de la respuesta esta en el string de respuestas arrayRespuesta
+        // la posición dentro del string de arrayRespuesta es el numero de pregunta menos 1
+        // el numero de pregunta es  fila.Numero
+
+        const indArrayRespuesta = fila.Numero - 1;
+        const valRespuesta = arrayRespuesta[indArrayRespuesta];
+        const indValTxtRptas = valRespuesta - 1;
+        fila.respta = valTxtRptas[indValTxtRptas];
     }
-  }) 
+  })      
 }
 
 async function busca1SiNo(){
 
-}
-
-async function busca2Por(fila) {
-  switch (fila.tipo) {
-      case 1:
-          fila.respta = "No";
-          break;
-      case 2:
-          fila.respta = "50%";
-          break;
-      case 3:
-          fila.respta = "75%";
-          break;
-      default:
-          fila.respta = "100%";
-          break;
-  }
-}
-
-async function busca3Nume(){
 }
 
 async function busca4Check(){
@@ -427,10 +462,16 @@ async function leerTextoCheck () {
 
 async function generarPDF() {
   // const datos = await obtenerDatos();
-    const datos = await recuperarPreguntas();
-  console.log(datos);
+    const lineToPrint = await recuperarPreguntas();
+    // console.log('lineas a imprimir: ' , lineToPrint);
   // const datosRpta = await cambiarDatos(datos);
-  await cambiarDatos(datos);
+  // await cambiarDatos(lineToPrint);
+  if (Array.isArray(lineToPrint)) {
+    // console.log('lineToPrint es un arreglo:', lineToPrint);
+    await cambiarDatos(lineToPrint);
+  } else {
+    console.error('recuperarPreguntas no devolvió un arreglo:', lineToPrint);
+  }
   // console.log(datos);
 
   // Inicializar jsPDF
@@ -452,6 +493,28 @@ async function generarPDF() {
   doc.setTextColor('#0000ff'); // Color azul brillante
   doc.text(`\n\n C: Capitulo, S: Sección, Nro: Número`, 10, 20);
 
+
+    // Configurar estilos de columna para autoTable
+  // const columnStyles = {
+  //   Capitulo: { cellWidth: 10 }, // Establecer el ancho de la columna 
+  //   seccionRomano: { cellWidth: 10 },  // Establecer el ancho de la 
+  //   Numero: { cellWidth: 10 }, // Establecer el ancho de la columna 
+  //   Descrip: { cellWidth: 40 },  // Establecer el ancho de la columna 
+  //   tipo: { cellWidth: 5 },  // Establecer el ancho de la columna 
+  //   nroRpt: { cellWidth: 5 },  // Establecer el ancho de la columna 
+  //   respta: { cellWidth: 10 },  // Establecer el ancho de la columna 
+  // };
+
+  const columnStyles = {
+    Capitulo: { cellWidth: 10 },
+    seccionRomano: { cellWidth: 10 },
+    Numero: { cellWidth: 10 },
+    Descrip: { cellWidth: 60 }, // Aumentar el ancho para Descrip si el texto es largo
+    tipo: { cellWidth: 10 },
+    nroRpt: { cellWidth: 10 },
+    respta: { cellWidth: 20 }, // Aumentar el ancho para respta si el texto es largo
+  };
+
   const columnas = [
     { title: "C", dataKey: "Capitulo" },
     { title: "S", dataKey: "seccionRomano" },
@@ -461,16 +524,6 @@ async function generarPDF() {
     { title: "NR", dataKey: "nroRpt" },
     { title: "Respuesta", dataKey: "respta" },      
   ];
-
-    // Configurar estilos de columna para autoTable
-  const columnStyles = {
-    Capitulo: { cellWidth: 10 }, // Establecer el ancho de la columna 
-    seccionRomano: { cellWidth: 10 },  // Establecer el ancho de la 
-    Numero: { cellWidth: 10 }, // Establecer el ancho de la columna 
-    Descrip: { cellWidth: 20 },  // Establecer el ancho de la columna 
-    tipo: { cellWidth: 5 },  // Establecer el ancho de la columna 
-    respta: { cellWidth: 20 },  // Establecer el ancho de la columna 
-  };
 
     // Función para mapear y transformar datos
   // const transformarDatos = datos.map(row => ({
@@ -482,13 +535,36 @@ async function generarPDF() {
   //Uso de transformarDatos en autoTable: En lugar de pasar directamente datos al body de autoTable, ahora se pasa transformarDatos. Esto asegura que los valores transformados (con "SI" o "NO" en lugar de 1 o 0 en el campo tipo) se impriman en la tabla.
 
   // Agregar tabla de datos con ajuste de texto
-  doc.autoTable({
-    startY: 30,
-    head: [columnas.map(col => col.title)],
-    body: datos.map(row => columnas.map(col => row[col.dataKey])),
-    columnStyles: columnStyles, // Aplicar estilos de columna
-    styles: { overflow: 'linebreak' } // Ajuste de texto
+//   doc.autoTable({
+//     startY: 30,
+//     head: [columnas.map(col => col.title)],
+//     body: lineToPrint.map(row => columnas.map(col => row[col.dataKey])),
+//     columnStyles: columnStyles, // Aplicar estilos de columna
+//     styles: { overflow: 'linebreak' } // Ajuste de texto
+// });
+
+
+doc.autoTable({
+  startY: 30,
+  head: [columnas.map(col => col.title)],
+  body: lineToPrint.map(row => columnas.map(col => row[col.dataKey])),
+  columnStyles: columnStyles,
+  styles: { cellPadding: 2, fontSize: 8 },
+  bodyStyles: { valign: 'top' },
+  theme: 'grid',
+  // Asegúrate de que el texto se envuelva en la celda
+  didDrawCell: (data) => {
+    if (data.column.dataKey === 'Descrip' && data.cell.raw.length > 0) {
+      const text = data.cell.raw;
+      const textLines = doc.splitTextToSize(text, data.cell.width);
+      doc.text(textLines, data.cell.x, data.cell.y + 2);
+      data.cell.text = textLines;
+    }
+  },
 });
+
+
+
 
   // Guardar el PDF :  doc.save('informe.pdf');
   // Convertir el PDF a un Blob
