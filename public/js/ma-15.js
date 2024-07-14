@@ -73,7 +73,7 @@ function calculaResultados() {
   
   const porcientoFormateado = ((valores / maximo) * 100).toFixed(2);
   return porcientoFormateado;
-}
+}}
 
 // PROCESO PRINCIPAL ::::::::::::::::::::::::::::::::::::::::::
 
