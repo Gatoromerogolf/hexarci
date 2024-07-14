@@ -47,29 +47,30 @@ function calculaResultados() {
   for (let i = 0; i < respuestas.length; i++) {
     if (!puntajesIndividuales[i]) puntajesIndividuales[i] = []; // Asegurar que existe el arreglo antes de asignar valores
 
-    console.log(`i= ${i} ,
-         valores ${valores} ,
-         respuestas: ${respuestas[i]}`);
+    // console.log(`i= ${i} ,
+    //      valores ${valores} ,
+    //      respuestas: ${respuestas[i]}`);
 
-    switch (respuestas[i]) {
-      case "1":
-        valores += 0;
-        break;
-      case "2":
-        valores += 0.5 * 10;
-        console.log(`caso 2 ${valores}`);
-        break;
-      case "3":
-        valores += 0.75 * 10;
-        console.log(`caso 3 ${valores}`);
-        break;
-      case "4":
-        valores += 10;
-        console.log(`caso 4 ${valores}`);
-        break;
-    }
+    switch (respuestas[0]) {
+      case "1": valores +=0;
+              break;
+      case "2": valores +=(0.50 * 10);
+              console.log (`caso 2 ${valores}`)
+              break;
+      case "3": valores +=(0.75 * 10);
+              console.log (`caso 3 ${valores}`)
+              break;
+      case "4": valores +=10;
+              console.log (`caso 4 ${valores}`)
+              break;
+      }
+
+    if (respuestas[1] == 1) {
+        valores +=10
+      } 
+
     console.log(`valor despues calculo: ${valores}`);
-  }
+  
   const porcientoFormateado = ((valores / maximo) * 100).toFixed(2);
   return porcientoFormateado;
 }
