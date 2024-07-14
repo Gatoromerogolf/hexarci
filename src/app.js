@@ -167,7 +167,7 @@ app.post('/api/login', (req, res) => {
             const user = results[0]; // Accede a la primera fila de los resultados
             req.session.user = { username: user.username, firstName: user.Nombre, lastName: user.Apellido , CUIT: user.CUIT}; // Guarda el usuario como un objeto en la sesión
             // res.status(200).send('Login exitoso');
-            res.status(200).json({ message: 'Login exitoso', user: { firstName: user.Nombre, lastName: user.Apellido, CUIT: user.CUIT } }); 
+            res.status(200).json({ message: 'Login exitoso', user: { firstName: user.Nombre, lastName: user.Apellido, CUIT: user.CUIT, ingresado: user.ingresado } }); 
         } else {
             res.status(401).send('Credenciales inválidas');
         }
@@ -181,6 +181,23 @@ Acceso a CUIT: En el frontend, puedes acceder a CUIT utilizando user.CUIT una ve
 De esta manera, puedes utilizar el CUIT en cualquier parte del frontend después de que el usuario haya iniciado sesión correctamente. Si necesitas mantener el estado de inicio de sesión y los datos del usuario entre diferentes páginas o sesiones, podrías considerar almacenar esta información en localStorage, sessionStorage, o en el estado de tu aplicación si estás usando una librería como React, Vue, etc.
 
 */
+
+
+// Ruta para actualizar el campo "ingresado" del usuario:::::::::::::::::::::::::::::::
+app.post('/api/updateIngresado', (req, res) => {
+  const { username, CUIT } = req.body;
+  const query = 'UPDATE usuarios SET ingresado = 1 WHERE username = ?, CUIT = ?';
+
+  conexion.query(query, [username, CUIT], (error, results) => {
+    if (error) {
+      console.error('Error al actualizar el campo ingresado:', error);
+      res.status(500).json({ error: 'Error al actualizar el campo ingresado' });
+      return;
+    }
+    res.json({ message: 'Campo ingresado actualizado correctamente' });
+  });
+});
+
 
 
 // Ruta protegida que requiere autenticación :::::::::::::::::::::::::::::::::::::::::.

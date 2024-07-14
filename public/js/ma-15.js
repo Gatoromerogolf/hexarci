@@ -174,6 +174,9 @@ function continuar() {
 
   grabarResultados2(respuestas)
     .then(() => {
+      localStorage.setItem('username', username);
+      const CUIT = localStorage.getItem('CUIT');
+      actualizaUserIngreso(username, CUIT)
       window.location.href =
         JSON.parse(localStorage.getItem("idioma")) == 1
           ? "Menu-A.html"
@@ -224,6 +227,28 @@ async function grabarResultados2(respuestas) {
   }
 }
 
+
+// Función para actualizar el campo ingresado del usuario
+function actualizaUserIngreso(username, CUIT) {
+  fetch('/api/updateIngresado', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username , CUIT })
+  })
+  .then(response => response.json())
+  .then(data => {
+      if (data.message === 'Campo ingresado actualizado correctamente') {
+          console.log('Campo ingresado actualizado correctamente');
+      } else {
+          console.error('Error al actualizar el campo ingresado');
+      }
+  })
+  .catch(error => {
+      console.error('Error en la solicitud de actualización:', error);
+  });
+}
 
 // Armar velocimetro ::::::::::::::::::::::::::::::::::::::
 const opts = {

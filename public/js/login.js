@@ -17,6 +17,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         if (data.message === 'Login exitoso') {
             // Guardar el nombre de usuario en localStorage
             localStorage.setItem('username', username);
+            localStorage.setItem('ingresado', data.user.ingresado); 
             
             // Guardar el nombre y apellido en localStorage
             localStorage.setItem('nombre', data.user.firstName);
@@ -29,7 +30,12 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             console.log('apellido:', localStorage.getItem('apellido'));
             console.log('CUIT:', localStorage.getItem('CUIT'));
             // Login exitoso, redirige a presentacion.html
-            window.location.href = '../src/presentacion.html';
+
+            if (data.user.ingresado == 1) {
+                window.location.href = '../src/continuacion.html';
+               } else {
+                window.location.href = '../src/presentacion.html';
+            }
         } else {
             // Mostrar mensaje de error si las credenciales son inválidas
             console.error('Credenciales inválidas');
