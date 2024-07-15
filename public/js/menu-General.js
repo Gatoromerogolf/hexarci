@@ -208,7 +208,8 @@ function completarHtml() {
         celdaPorciento.textContent = '';
       }
     }
-}}
+  }
+}
 
 // ::::::::::::::::::::::------------------------------------------
 function formatearNumero(numero) {
@@ -217,18 +218,7 @@ function formatearNumero(numero) {
   return partes.join(',');
 }
 
-
-//  ARMADO DEL PDF -
-//      Leer todas las preguntas del capítulo
-//      leer todas las respuestas del capitulo
-//      convertir los codigos de respuesta
-//      generar PDF
-
-// recuperarPreguntas();
 recuperarRespuestas(CUIT, capitulo);
-// cambiarDatos();
-// generarPDF();
-// cambiarDatos();
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -366,16 +356,6 @@ async function cambiarDatos(lineToPrint) {
 
         let textoConcatenado = "";
 
-        // indicesCheck.forEach(indice => {
-        //   if (indice < filaCheckRptas.textos.length) {
-        //     textoConcatenado += filaCheckRptas.textos[indice - 1];
-        //     textoConcatenado += " - ";
-        //   } else {
-        //     console.error(`Índice ${indice} fuera de los límites del array valores`);
-        //     console.log ('largo filacheckrptas :  ' , filaCheckRptas.textos.length);
-        //   }
-        // });
-
         indicesCheck.forEach(indice => {
           if (indice > filaCheckRptas.textos.length) {
             console.error(`Índice ${indice} fuera de los límites del array valores`);
@@ -386,9 +366,6 @@ async function cambiarDatos(lineToPrint) {
               textoConcatenado += "  ";
           } 
         });
-
-
-
 
         fila.respta = textoConcatenado
     }
@@ -412,16 +389,6 @@ async function cambiarDatos(lineToPrint) {
         fila.respta = valTxtRptas[indValTxtRptas];
     }
   })      
-}
-
-async function busca1SiNo(){
-
-}
-
-async function busca4Check(){
-}
-
-async function busca5Varios(){
 }
 
 async function leerTextoRespuestas () {
@@ -459,11 +426,9 @@ async function leerTextoCheck () {
 }
 
 
-
 async function generarPDF() {
   // const datos = await obtenerDatos();
     const lineToPrint = await recuperarPreguntas();
-    // console.log('lineas a imprimir: ' , lineToPrint);
   // const datosRpta = await cambiarDatos(datos);
   // await cambiarDatos(lineToPrint);
   if (Array.isArray(lineToPrint)) {
@@ -472,7 +437,6 @@ async function generarPDF() {
   } else {
     console.error('recuperarPreguntas no devolvió un arreglo:', lineToPrint);
   }
-  // console.log(datos);
 
   // Inicializar jsPDF
   const { jsPDF } = window.jspdf;
@@ -563,8 +527,23 @@ doc.autoTable({
   },
 });
 
+// ::::::::::::::  agregado  :::::::::::::::::::::::::::::
+    //   // Convertir el gráfico en una imagen y agregarlo al PDF
 
+    // // Esperar a que el gráfico se haya generado
+    // setTimeout(() => {
+    //   // Convertir el gráfico en una imagen y agregarlo al PDF
+    //   html2canvas(document.getElementById('myChart')).then(canvas => {
+    //   const imgData = canvas.toDataURL('image/png');
+    //   const imgProps = doc.getImageProperties(imgData);
+    //   const pdfWidth = doc.internal.pageSize.getWidth();
+    //   const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
+    //   // Agregar la imagen al PDF
+    //   doc.addPage(); // Añadir una nueva página
+    //   doc.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
+    //   })
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
   // Guardar el PDF :  doc.save('informe.pdf');
   // Convertir el PDF a un Blob
@@ -581,3 +560,4 @@ doc.autoTable({
   // document.body.appendChild(iframe);
   window.open(pdfUrl);
 }
+
