@@ -175,7 +175,7 @@ function continuar() {
 
   grabarResultados2(respuestas)
     .then(() => {
-      localStorage.setItem('username', username);
+      const username = localStorage.getItem('username');
       const CUIT = localStorage.getItem('CUIT');
       actualizaUserIngreso(username, CUIT)
       window.location.href =
