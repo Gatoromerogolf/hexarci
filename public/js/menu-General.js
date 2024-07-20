@@ -39,8 +39,7 @@ async function leeCapitulos(indice) {
         if (data && data.length > 0) {
           const { CUIT, capitulo, maximo, score, porcentaje } = data[0]; // Desestructura los valores
           const elemento = [
-            capitulo,
-            '##', nombre, maximo, score, porcentaje
+            capitulo, '##', nombre, maximo, score, porcentaje
           ];
           tablaMenuEs.push(elemento);
         }
@@ -99,7 +98,7 @@ function completarHtml() {
   tablaMenuEs.push(elemento);
 
   tablaMenuA = tablaMenuEs;
-  console.table(tablaMenuA);
+  // console.table(tablaMenuA);
 
   let tablaIndice = document.getElementById("tablaIndiceCapitulos");
   for (i = 0; i < tablaMenuA.length; i++) {
@@ -118,6 +117,10 @@ function completarHtml() {
     enlace.href = tablaMenuA[i][1]; // Establecer el atributo href con el valor correspondiente
     enlace.textContent = tablaMenuA[i][2]; // Establecer el texto del enlace con el tercer elemento de la tabla
     enlace.style.textDecoration = 'none';
+
+    if (tablaMenuA[i][1] == "##") {
+      enlace.style.color='gray';
+    }
 
       // Agregar el enlace como hijo de la celda
     if (i == tablaMenuA.length-1){
