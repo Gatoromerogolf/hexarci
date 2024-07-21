@@ -319,16 +319,18 @@ function continuar() {
 // }
 
 async function grabarResultados2(respuestas) {
-
   const capitulo = "A";
   const seccion = 1;
   const score = valores;
   const respuesta = respuestas;
+  const porcentaje = porcientoFormateado;
 
   const body = {
     capitulo,
     seccion,
+    maximo, 
     score,
+    porcentaje,
     respuesta
   };
 

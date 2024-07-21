@@ -5,7 +5,7 @@ let valores = 0;
 let porcientoFormateado = 0;
 let puntajesIndividuales = [];
 let filasFaltantes = [];
-const maximo = 160;
+let maximo = 160;
 if (JSON.parse(localStorage.getItem('3o4Direct')) == 1) {
       maximo =+ 10;
 }
@@ -216,18 +216,21 @@ function continuar() {
 }
 
 async function grabarResultados2(respuestas) {
-
   const capitulo = "A";
   const seccion = 2;
   const score = valores;
   const respuesta = checkboxesSeleccionados;
+  const porcentaje = porcientoFormateado;
 
   const body = {
     capitulo,
     seccion,
+    maximo, 
     score,
+    porcentaje,
     respuesta
   };
+
 
   try {
     const response = await fetch("http://localhost:3000/insertar2", {

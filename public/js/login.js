@@ -24,17 +24,17 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             localStorage.setItem('apellido', data.user.lastName);
             localStorage.setItem('CUIT', data.user.CUIT);
             
-            console.log(`valores guardados: ${data.user.firstName}, ${data.user.lastName}, ${data.user.CUIT}`)
-            console.log('Valores guardados en localStorage:');
-            console.log('nombre:', localStorage.getItem('nombre'));
-            console.log('apellido:', localStorage.getItem('apellido'));
-            console.log('CUIT:', localStorage.getItem('CUIT'));
+            // console.log(`valores guardados: ${data.user.firstName}, ${data.user.lastName}, ${data.user.CUIT}`)
+            // console.log('Valores guardados en localStorage:');
+            // console.log('nombre:', localStorage.getItem('nombre'));
+            // console.log('apellido:', localStorage.getItem('apellido'));
+            // console.log('CUIT:', localStorage.getItem('CUIT'));
             // Login exitoso, redirige a presentacion.html
 
             if (data.user.ingresado == 1) {
                 window.location.href = '../src/continuacion.html';
                } else {
-                window.location.href = '../src/presentacion.html';
+                window.location.href = '../src/Presentacion.html';
             }
         } else {
             // Mostrar mensaje de error si las credenciales son inválidas

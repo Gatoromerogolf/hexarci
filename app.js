@@ -53,9 +53,9 @@ app.post('/insertar2', (req, res) => {
         return res.status(401).json({ error: 'No estás autenticado' });
     }
 
-    console.log ("llego y paso el req session")
+    // console.log ("llego y paso el req session")
 
-    const { capitulo, seccion, score, respuesta } = req.body;
+    const { capitulo, seccion, maximo, score, porcentaje, respuesta } = req.body;
     const usuario = req.session.user.username; // Obtener el usuario de la sesión
     const CUIT = req.session.user.CUIT;
 
@@ -66,10 +66,10 @@ app.post('/insertar2', (req, res) => {
     // Convertir el array de respuesta a un string JSON
     const respuestaJSON = JSON.stringify(respuesta);   
 
-    console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, score, respuesta });
+    // console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta });
 
-    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, score, respuesta) VALUES (?, ?, ?, ?, ?, ?)';
-    const datosAPasar = [CUIT, usuario, capitulo, seccion, score, respuestaJSON];
+    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta) VALUES (?, ?, ?, ?, ?, ?)';
+    const datosAPasar = [CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuestaJSON];
 
     conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
         if (error) {
@@ -215,7 +215,7 @@ app.get('/totalCapitulos', (req, res) => {
         return;
       }
 
-    console.log(`Recibido CUIT: ${CUIT}, capitulo: ${capitulo}`);
+    // console.log(`Recibido CUIT: ${CUIT}, capitulo: ${capitulo}`);
 
     const query = 'SELECT * FROM totalcapitulos WHERE CUIT = ? AND capitulo = ?';
   
@@ -225,7 +225,7 @@ app.get('/totalCapitulos', (req, res) => {
           console.log("error servidor al obtener registros");
           return;
         }
-        console.log('Resultados de la consulta:', results);
+        // console.log('Resultados de la consulta:', results);
         
         // Verificar si hay al menos un registro
         if (results.length > 0) {
@@ -314,7 +314,7 @@ app.get('/busca-respuesta-capitulo', (req, res) => {
       }
       if (results.length > 0) {
         res.json({ exists: true, records: results});
-        console.log('Resultados encontrados busca-respuesta-capitulo - despues json:', results);
+        // console.log('Resultados encontrados busca-respuesta-capitulo - despues json:', results);
       } else {
         console.log (`no hay respuesta para CUIT ${CUIT} y capitulo ${capitulo} en busca-respuesta-capitulo`)
         res.json({ exists: false });
