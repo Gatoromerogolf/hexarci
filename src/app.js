@@ -186,7 +186,7 @@ De esta manera, puedes utilizar el CUIT en cualquier parte del frontend después
 // Ruta para actualizar el campo "ingresado" del usuario:::::::::::::::::::::::::::::::
 app.post('/api/updateIngresado', (req, res) => {
   const { usuario, CUIT } = req.body;
-  const query = 'UPDATE usuarios SET ingresado = 1 WHERE usuario = ?, CUIT = ?';
+  const query = 'UPDATE usuarios SET ingresado = 1 WHERE usuario = ? AND CUIT = ?';
 
   conexion.query(query, [usuario, CUIT], (error, results) => {
     if (error) {
@@ -337,7 +337,8 @@ app.get('/busca-respuesta', (req, res) => {
 
         if (results.length > 0) {
             // console.log (`encontro respuesta para seccion ${seccion}`)
-            res.json({ exists: true, score: results[0].score });
+            // res.json({ exists: true, score: results[0].score });  esto solo devuelve el score
+            res.json({ exists: true, record: results[0] });  //devuelve registro completo
           } else {
             // console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
             res.json({ exists: false });

@@ -34,16 +34,18 @@ async function obtenerSecciones(indice) {
         if (respuesta.exists){
           // si lo encuentra, llena la tabla sin pasar el link
           console.log (`Encontro registro ${seccion} en obtenerSecciones`)
-          // const registro = await response.json()
+          const registro = respuesta.record;
 
           const elemento = [
             `${primerSeccion.seccionromano}`,
             `##`,
             `${primerSeccion.descripcion}`,
-            maximo,
-            respuesta.score,
-            (respuesta.score / primerSeccion.max4 * 100).toFixed(2)
+            registro.maximo,
+            registro.score,
+            // (respuesta.score / primerSeccion.max4 * 100).toFixed(2)
+            registro.porcentaje,
           ];
+          console.log (elemento);
           tablaMenuEs.push(elemento);
         }
           else{
@@ -102,7 +104,8 @@ async function buscaRespuesta(CUIT, capitulo, seccion) {
     if (response.ok) {
       const result = await response.json();
       if (result.exists) {
-        return { exists: true, score: result.score };
+        // return { exists: true, score: result.score };
+        return { exists: true, record: result.record };
       }
     } else {
       console.error(`Sin respuesta para seccion ${seccion} en buscaRespuesta`);
@@ -156,28 +159,28 @@ function actualizarHTML(tablaMenuEs) {
     }  
     celdaEnlace.appendChild(enlace); 
 
-    celdaMaximo = lineaDatosFd.insertCell(-1);
-    if (tablaMenuA[i][3] === 0) {
-      tablaMenuA[i][3] = ""
-    }
-    celdaMaximo.textContent = tablaMenuA[i][3];
+    let celdaMaximo = lineaDatosFd.insertCell(-1);
+    // if (tablaMenuA[i][3] === 0) {
+    //   tablaMenuA[i][3] = ""
+    // }
+    celdaMaximo.textContent = tablaMenuA[i][3] || "";
     celdaMaximo.classList.add('ajustado-derecha');
-    totalMax += tablaMenuA[i][3];
+    totalMax += Number(tablaMenuA[i][3]);
 
-    celdaPuntos = lineaDatosFd.insertCell(-1);
-    if (tablaMenuA[i][4] === 0) {
-      tablaMenuA[i][4] = ""
-    }
-    celdaPuntos.textContent = tablaMenuA[i][4];
+    let celdaPuntos = lineaDatosFd.insertCell(-1);
+    // if (tablaMenuA[i][4] === 0) {
+    //   tablaMenuA[i][4] = ""
+    // }
+    celdaPuntos.textContent = tablaMenuA[i][4] || "";
     celdaPuntos.classList.add('ajustado-derecha');
     // Convierte el valor a un número antes de sumarlo
     totalCal += Number(tablaMenuA[i][4]);
 
-    celdaPorciento = lineaDatosFd.insertCell(-1);
-    if (tablaMenuA[i][5] === 0) {
-      tablaMenuA[i][5] = ""
-    }
-    celdaPorciento.textContent = tablaMenuA[i][5];
+    let celdaPorciento = lineaDatosFd.insertCell(-1);
+    // if (tablaMenuA[i][5] === 0) {
+    //   tablaMenuA[i][5] = ""
+    // }
+    celdaPorciento.textContent = tablaMenuA[i][5] || "";
     celdaPorciento.classList.add('ajustado-derecha');
     totalPor = ((totalCal / totalMax) * 100).toFixed(2);
   }
