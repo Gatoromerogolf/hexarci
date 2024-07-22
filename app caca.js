@@ -66,9 +66,9 @@ app.post('/insertar2', (req, res) => {
     // Convertir el array de respuesta a un string JSON
     const respuestaJSON = JSON.stringify(respuesta);   
 
-    // console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta });
+    console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuestaJSON });
 
-    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta) VALUES (?, ?, ?, ?, ?, ?)';
+    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     const datosAPasar = [CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuestaJSON];
 
     conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
@@ -287,7 +287,7 @@ app.get('/busca-respuesta', (req, res) => {
             // console.log (`encontro respuesta para seccion ${seccion}`)
             res.json({ exists: true, score: results[0].score });
           } else {
-            console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
+            // console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
             res.json({ exists: false });
           }
         });
@@ -316,7 +316,7 @@ app.get('/busca-respuesta-capitulo', (req, res) => {
         res.json({ exists: true, records: results});
         // console.log('Resultados encontrados busca-respuesta-capitulo - despues json:', results);
       } else {
-        console.log (`no hay respuesta para CUIT ${CUIT} y capitulo ${capitulo} en busca-respuesta-capitulo`)
+        // console.log (`no hay respuesta para CUIT ${CUIT} y capitulo ${capitulo} en busca-respuesta-capitulo`)
         res.json({ exists: false });
         }
       });

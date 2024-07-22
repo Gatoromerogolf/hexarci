@@ -47,7 +47,7 @@ async function obtenerSecciones(indice) {
           tablaMenuEs.push(elemento);
         }
           else{
-            console.log (`no hay respuesta para seccion ${seccion}`);
+            // console.log (`no hay respuesta para seccion ${seccion}`);
             const elemento = [
               `${primerSeccion.seccionromano}`,
               '##', 

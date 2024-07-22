@@ -11,14 +11,44 @@ body {
     background-attachment: fixed;
 }
 
+
 /* Fondo específico para la clase fiananciero */
 body.financiero {
   background: url('background financiero.jpg') no-repeat center center fixed;
   background-size: cover;
 }
 
+/* Fondo específico para la clase apetito riesgo */
+body.aperie {
+  background: url('background aperie.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase mercado */
+body.mercado {
+  background: url('background mercado.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase procesos */
+body.procesos {
+  background: url('background procesos.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Fondo específico para la clase clidad */
+body.calidad {
+  background: url('background calidad.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+h3 {
+  margin-top: 0;
+}
+
+
 .survey-container {
-    max-width: 900px;
+    max-width: 700px;
     margin: 50px auto;
     padding: 20px;
     background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco con opacidad */
@@ -47,6 +77,10 @@ body.financiero {
 h1, h2, h3 {
     text-align: center;
     color: #333333;
+}
+
+h5 {
+  color: #686767;
 }
 
 .form-group {
@@ -228,6 +262,9 @@ h1, h2, h3 {
   height: auto;
 }
 
+.nav-iconstxt a {
+  text-decoration: none;
+}
 
 /* --------------   PREGUNTAS EN TABLAS
   /* Estilos para la tabla */
@@ -343,7 +380,7 @@ h1, h2, h3 {
     justify-content: center;
   }
 
-#tituloSeccion{
+.tituloSeccion{
   display: inline-block;
   padding: 10px 50px 10px 50px; /* Espacio interior del rectángulo */
   border: 2px solid rgba(0, 0, 0, 0.5); /* Borde del rectángulo */
@@ -353,7 +390,7 @@ h1, h2, h3 {
   text-align: center; 
 }
 
-#tituloSeccion a {
+.tituloSeccion a {
   text-decoration: none; /* Quitar el subrayado del enlace */
   color: inherit; /* Mantener el color del enlace como el color del texto del h1 */
 }

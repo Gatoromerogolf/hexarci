@@ -57,26 +57,26 @@ function obtenerValoresSeleccionados() {
     alert(`Falta infomar en estas filas: ${filasFaltantes}`);
   } else {
     //  inserta con 6 el valor de los checkbox para que se posicione en la ultima = 0
-    respuestas.splice(6, 0, 9);
+      respuestas.splice(6, 0, 9);
 
-    const advisoryBoard = document.querySelector(
-      `input[name="A-I-10"]:checked`
-    );
-    if (advisoryBoard.value == 1) {
-      // indica que se informó que tiene AB
-      const respuestaAB = document.querySelector(
-        `input[name="A-I-11"]:checked`
+      const advisoryBoard = document.querySelector(
+        `input[name="A-I-10"]:checked`
       );
-      // si puso que tiene AB tiene que informar el campo 11
-      if (respuestaAB) {
-        console.log("entro por aca: " + respuestaAB.value);
-        //si respondio hay que insertar el valor en el arreglo
-        respuestas.splice(10, 0, respuestaAB.value);
-      } else {
-        alert(`No selecciono lo del AB en la fila 11`);
-      }
-      } else {
-        respuestas.splice(10, 0, '9'); // oone 9 como marca de no respuesta    
+      if (advisoryBoard.value == 1) {
+          // indica que se informó que tiene AB
+          const respuestaAB = document.querySelector(
+            `input[name="A-I-11"]:checked`
+          );
+          // si puso que tiene AB tiene que informar el campo 11
+          if (respuestaAB) {
+            console.log("entro por aca: " + respuestaAB.value);
+            //si respondio hay que insertar el valor en el arreglo
+            respuestas.splice(10, 0, respuestaAB.value);
+          } else {
+            alert(`No selecciono lo del AB en la fila 11`);
+          }
+          } else {
+            respuestas.splice(10, 0, '9'); // oone 9 como marca de no respuesta    
       }
 
 
@@ -99,8 +99,8 @@ function obtenerValoresSeleccionados() {
           } else {
             respuestas.splice(14, 0, '9'); // pone 9 como marca de no respuesta    
       }
-
-
+      
+                
     }
     console.log(`respuestas con 7 y 11 ${respuestas}`);
     return respuestas; // Devuelve el arreglo si necesitas hacer algo más con él
@@ -289,11 +289,6 @@ function limpiarSelecciones() {
     checkbox.checked = false;
   });
 
-  document.getElementById('lineaAB').style.display = 'none';
-  document.getElementById('lineaAB1').style.display = 'none';
-  document.getElementById('lineaAB2').style.display = 'none';
-  document.getElementById('lineaAB3').style.display = 'none';
-  document.getElementById('lineaAB4').style.display = 'none';
   document.getElementById('linea2').style.display = 'none';
   document.getElementById('linea3').style.display = 'none';
   document.getElementById('linea4').style.display = 'none';
@@ -303,7 +298,6 @@ function limpiarSelecciones() {
   document.getElementById('fila-15a').style.display = 'none';
   document.getElementById('fila-15b').style.display = 'none';
 }
-
 
 // ------------ ventana del final con resultados---------------
 
@@ -332,87 +326,14 @@ function cerrarAlerta() {
 }
 
 function continuar() {
-  cerrarAlerta();  // Opcional, depende de si quieres cerrar la alerta antes de cambiar la página
+  cerrarAlerta(); // Opcional, depende de si quieres cerrar la alerta antes de cambiar la página
 
-  grabarResultados2(respuestas)
-    .then(() => {
-      const usuario =localStorage.getItem('username') // Obtener username
-      const CUIT = localStorage.getItem('CUIT');
-      actualizaUserIngreso(usuario, CUIT)
-      window.location.href =
-        JSON.parse(localStorage.getItem("idioma")) == 1
-          ? "MA-2.html"
-          : "MA-2-en.html";
-    })
-    .catch((error) => {
-      console.error("Error en grabarResultados:", error);
-      alert("Hubo un error al grabar los resultados: " + error.message);
-    });
-}
+  // if (idioma == 1) {
+  //       (window.location.href = "MA-2.html")
+  //     else
+  //       (window.location.href = "MA-2-en.html")}
 
-//   window.location.href = (JSON.parse(localStorage.getItem('idioma'))) == 1 ? "MA-2.html" : "MA-2-en.html"
-// }
-
-async function grabarResultados2(respuestas) {
-  const capitulo = "A";
-  const seccion = 1;
-  // const maximo = maximo;
-  const score = valores;
-  const respuesta = respuestas;
-  const porcentaje = porcientoFormateado;
-
-  const body = {
-    capitulo,
-    seccion,
-    maximo, 
-    score,
-    porcentaje,
-    respuesta
-  };
-
-  try {
-    const response = await fetch("/insertar2", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-      credentials: "include",
-    });
-
-    const result = await response.json();
-    if (result.success) {
-    } else {
-      throw new Error(result.error || "Error desconocido ins 2");
-    }
-  } catch (error) {
-    console.log("Error:", error);
-    alert("estamos en el error (ins 2): " + error.message);
-    throw error; // Rechaza la promesa en caso de error
-  }
-}
-
-
-// Función para actualizar el campo ingresado del usuario
-function actualizaUserIngreso(usuario, CUIT) {
-  fetch('/api/updateIngresado', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ usuario , CUIT })
-  })
-  .then(response => response.json())
-  .then(data => {
-      if (data.message === 'Campo ingresado actualizado correctamente') {
-          console.log('Campo ingresado actualizado correctamente');
-      } else {
-          console.error('Error al actualizar el campo ingresado');
-      }
-  })
-  .catch(error => {
-      console.error('Error en la solicitud de actualización:', error);
-  });
+  window.location.href = (JSON.parse(localStorage.getItem('idioma'))) == 1 ? "MA-2.html" : "MA-2-en.html"
 }
 
 // ------------------ no se utiliza

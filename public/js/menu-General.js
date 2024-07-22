@@ -203,7 +203,12 @@ function completarHtml() {
       celdaPuntos.textContent = numeroFormateado;
 
       celdaPorciento.style.fontWeight = 'bold'; // Hacer el texto en negrita
-      celdaPorciento.textContent = ((totcalif / totmaximo)*100).toFixed(2);
+      if (totmaximo > 0) {
+        celdaPorciento.textContent = ((totcalif / totmaximo)*100).toFixed(2)
+      }
+        else {
+          celdaPorciento.textContent = "";
+        }
 
       if (!totcalif > 0) {
         celdaMaximo.textContent = '';
@@ -230,7 +235,7 @@ async function recuperarPreguntas() {
     const response = await fetch('/preguntas');
     if (response.ok) {
       const result = await response.json();
-      console.log('Datos obtenidos de recuperarPreguntas:', result); // Agrega esta línea para verificar los datos obtenidos
+      // console.log('Datos obtenidos de recuperarPreguntas:', result); // Agrega esta línea para verificar los datos obtenidos
       return Array.isArray(result) ? result : []; // Asegura devolver un arreglo
     } else {
       console.error('Error al obtener las preguntas:', response.statusText);
@@ -343,7 +348,7 @@ async function cambiarDatos(lineToPrint) {
         // Necesitas encontrar el objeto donde pregunta es igual a 4X
         let indicesCheck = 0;
         // if(fila.tipo =  42) {return}
-        console.log ('entro aca por: ' , fila.tipo)
+        // console.log ('entro aca por: ' , fila.tipo)
         const filaCheckRptas = txtCheck.find(item => Number(item.pregunta) === fila.tipo);
         if (!filaCheckRptas) {
           console.log("No se encontró ninguna fila con la pregunta:", fila.tipo);

@@ -76,9 +76,9 @@ app.post('/insertar2', (req, res) => {
         return res.status(401).json({ error: 'No estás autenticado' });
     }
 
-    console.log ("llego y paso el req session")
+    // console.log ("llego y paso el req session")
 
-    const { capitulo, seccion, score, respuesta } = req.body;
+    const { capitulo, seccion, maximo, score, porcentaje, respuesta } = req.body;
     const usuario = req.session.user.username; // Obtener el usuario de la sesión
     const CUIT = req.session.user.CUIT;
 
@@ -89,10 +89,10 @@ app.post('/insertar2', (req, res) => {
     // Convertir el array de respuesta a un string JSON
     const respuestaJSON = JSON.stringify(respuesta);   
 
-    console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, score, respuesta });
+    console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta });
 
-    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, score, respuesta) VALUES (?, ?, ?, ?, ?, ?)';
-    const datosAPasar = [CUIT, usuario, capitulo, seccion, score, respuestaJSON];
+    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    const datosAPasar = [CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuestaJSON];
 
     conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
         if (error) {
@@ -185,10 +185,10 @@ De esta manera, puedes utilizar el CUIT en cualquier parte del frontend después
 
 // Ruta para actualizar el campo "ingresado" del usuario:::::::::::::::::::::::::::::::
 app.post('/api/updateIngresado', (req, res) => {
-  const { username, CUIT } = req.body;
-  const query = 'UPDATE usuarios SET ingresado = 1 WHERE username = ?, CUIT = ?';
+  const { usuario, CUIT } = req.body;
+  const query = 'UPDATE usuarios SET ingresado = 1 WHERE usuario = ?, CUIT = ?';
 
-  conexion.query(query, [username, CUIT], (error, results) => {
+  conexion.query(query, [usuario, CUIT], (error, results) => {
     if (error) {
       console.error('Error al actualizar el campo ingresado:', error);
       res.status(500).json({ error: 'Error al actualizar el campo ingresado' });
@@ -267,7 +267,7 @@ app.get('/totalCapitulos', (req, res) => {
         return;
       }
 
-    console.log(`Recibido CUIT: ${CUIT}, capitulo: ${capitulo}`);
+    // console.log(`Recibido CUIT: ${CUIT}, capitulo: ${capitulo}`);
 
     const query = 'SELECT * FROM totalcapitulos WHERE CUIT = ? AND capitulo = ?';
   
@@ -277,7 +277,7 @@ app.get('/totalCapitulos', (req, res) => {
           console.log("error servidor al obtener registros");
           return;
         }
-        console.log('Resultados de la consulta:', results);
+        // console.log('Resultados de la consulta:', results);
         
         // Verificar si hay al menos un registro
         if (results.length > 0) {
@@ -339,7 +339,7 @@ app.get('/busca-respuesta', (req, res) => {
             // console.log (`encontro respuesta para seccion ${seccion}`)
             res.json({ exists: true, score: results[0].score });
           } else {
-            console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
+            // console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
             res.json({ exists: false });
           }
         });
