@@ -56,8 +56,6 @@ app.post('/insertar2', (req, res) => {
         return res.status(401).json({ error: 'No estás autenticado' });
     }
 
-    // console.log ("llego y paso el req session")
-
     const { capitulo, seccion, maximo, score, porcentaje, respuesta } = req.body;
     const usuario = req.session.user.username; // Obtener el usuario de la sesión
     const CUIT = req.session.user.CUIT;
@@ -66,18 +64,13 @@ app.post('/insertar2', (req, res) => {
         return res.status(400).json({ error: 'Usuario no definido en la sesión' });
     }
 
-    // Convertir el array de respuesta a un string JSON
-    const respuestaJSON = JSON.stringify(respuesta);   
-
-    console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta });
-
+    const respuestaJSON = JSON.stringify(respuesta);// Convertir el array de respuesta a un string JSON   
     const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     const datosAPasar = [CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuestaJSON];
 
     conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
         if (error) {
             if (error.code === 'ER_DUP_ENTRY') {
-                // Manejar el error de duplicación
                 res.status(409).json({ error: 'Ya existe una respuesta para esta combinación de capitulo y seccion' });
             } else {
             console.log('Error:', error);
@@ -116,7 +109,6 @@ app.post('/grabaParciales', (req, res) => {
           res.status(500).json({ error: error.message });
       }
       } else {
-          // console.log(lista.insertId, lista.fieldCount);
           res.status(200).json({ success: true });
       }
   });
@@ -154,7 +146,13 @@ app.post('/api/login', (req, res) => {
                lastName: user.Apellido, 
                CUIT: user.CUIT}; // Guarda el usuario como un objeto en la sesión
             // res.status(200).send('Login exitoso');
-            res.status(200).json({ message: 'Login exitoso', user: { firstName: user.Nombre, lastName: user.Apellido, CUIT: user.CUIT, ingresado: user.ingresado } }); 
+            res.status(200).json({
+              message: 'Login exitoso',
+              user: {
+                firstName: user.Nombre,
+                lastName: user.Apellido,
+                CUIT: user.CUIT,
+                ingresado: user.ingresado } }); 
         } else {
             res.status(401).send('Credenciales inválidas');
         }
@@ -175,7 +173,7 @@ app.post('/api/updateIngresado', (req, res) => {
   const { usuario, CUIT } = req.body;
   const query = 'UPDATE users SET ingresado = 1 WHERE username = ? AND CUIT = ?';
 
-  conexion.query(query, [usuario, CUIT], (error, results) => {
+  conexion.query(query, [username, CUIT], (error, results) => {
     if (error) {
       console.error('Error al actualizar el campo ingresado:', error);
       res.status(500).json({ error: 'Error al actualizar el campo ingresado' });
@@ -195,10 +193,8 @@ app.get('/protected', (req, res) => {
     }
 });
 
-
 // Ruta para obtener todos los registros de la tabla secciones ::::::::::::::::::::
 app.get('/secciones', (req, res) => {
-    // obtiene el indice de la consulta
     const indice = parseInt(req.query.indice) || 0;
     const query = 'SELECT * FROM secciones WHERE seccion = ?';
   
@@ -209,8 +205,7 @@ app.get('/secciones', (req, res) => {
           return;
         }
     
-        // Verificar si hay al menos un registro
-        if (results.length > 0) {
+        if (results.length > 0) {  // Verificar si hay al menos un registro
           res.json(results);
         } else {
           res.status(404).json({ error: 'No se encontraron registros' });
@@ -218,10 +213,8 @@ app.get('/secciones', (req, res) => {
       });
     });
 
-
 // Ruta para obtener los registros de la tabla capitulos ::::::::::::::::::::
 app.get('/capitulos', (req, res) => {
-    // obtiene el indice de la consulta
     const indice = parseInt(req.query.indice) || 0;
     const query = 'SELECT * FROM capitulos WHERE ID = ?';
   
@@ -232,7 +225,6 @@ app.get('/capitulos', (req, res) => {
           return;
         }
     
-        // Verificar si hay al menos un registro
         if (results.length > 0) {
           res.json(results);
         } else {
@@ -243,7 +235,6 @@ app.get('/capitulos', (req, res) => {
 
 // Ruta para obtener los totales de la tabla totalcapitulos ::::::::::::::::::::
 app.get('/totalCapitulos', (req, res) => {
-    // obtiene el indice de la consulta
     const CUIT = req.query.CUIT;
     const capitulo = req.query.capitulo;
 
@@ -259,7 +250,6 @@ app.get('/totalCapitulos', (req, res) => {
           console.log("error servidor al obtener registros");
           return;
         }
-        
         if (results.length > 0) {
           res.json(results);
         } else {
@@ -306,7 +296,6 @@ app.get('/preguntas', (req, res) => {
     res.json(results);
   });
 });
-
 
 // Ruta para saber si existe respuesta para la seccion ::::::::::::::::::::
 app.get('/busca-respuesta', (req, res) => {
@@ -365,10 +354,7 @@ app.get('/busca-respuesta-capitulo', (req, res) => {
       });
     });
 
-
 // Ruta para actualizar la tabla capitulos con los totales.:::::::::::::::::::
-
-// Inserción de registros en MySQL opcion 2 :::::::::::::::::::::::::::::::::::::
 app.post('/total-Capitulo', (req, res) => {
     if (!req.session.user){
         return res.status(401).json({ error: 'No estás autenticado' });
@@ -400,7 +386,6 @@ app.post('/total-Capitulo', (req, res) => {
     });
 });
 
-
 // Ruta para obtener todos las respuestas de la tabla textorespuestas::::::::::::::::::::
 app.get('/textorespuestas', (req, res) => {
   const query = 'SELECT * FROM textorespuestas';
@@ -413,7 +398,6 @@ app.get('/textorespuestas', (req, res) => {
     res.json(results);
   });
 });
-
 
 // Ruta para obtener todos las respuestas de la tabla textocheck::::::::::::::::::::
 app.get('/textocheck', (req, res) => {
