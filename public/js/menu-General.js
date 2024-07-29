@@ -1,11 +1,11 @@
 let tablaMenuA = [];
 let tablaMenuEs = [];
 let primeraVez = 0;
-let pagina = '';
-const CUIT = localStorage.getItem('CUIT');
+let pagina = "";
+const CUIT = localStorage.getItem("CUIT");
 const capitulo = "A";
 respuestas = [];
-listaPrecios= [];
+listaPrecios = [];
 let direct3o4 = 0;
 
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -14,29 +14,29 @@ async function inicializarAplicacion() {
   try {
     listaPrecios = await leerListaPrecios();
     if (listaPrecios === null) {
-      console.error('No se pudo leer la lista de precios. Abortando inicialización.');
+      console.error(
+        "No se pudo leer la lista de precios. Abortando inicialización."
+      );
       return;
-    } else {
-      // console.table (listaPrecios)
     }
   } catch (error) {
-    console.error('Error durante la inicialización de la aplicación:', error);
+    console.error("Error durante la inicialización de la aplicación:", error);
   }
 }
 inicializarAplicacion();
 
 async function leerListaPrecios() {
   try {
-    const response = await fetch('/leeListaPrecios');
+    const response = await fetch("/leeListaPrecios");
     if (response.ok) {
       const result = await response.json();
       return Array.isArray(result) ? result : []; // Asegura devolver un arreglo
     } else {
-      console.error('Error al obtener las preguntas:', response.statusText);
+      console.error("Error al obtener las preguntas:", response.statusText);
       return [];
     }
   } catch (error) {
-    console.error('Error al realizar la solicitud:', error);
+    console.error("Error al realizar la solicitud:", error);
     return [];
   }
 }
@@ -59,74 +59,72 @@ async function leeCapitulos(indice) {
   try {
     const respuesta = await fetch(`/capitulos?indice=${indice}`);
     if (!respuesta.ok) {
-      console.log (`Error en lectura de capitulos`);
+      console.log(`Error en lectura de capitulos`);
       return;
     }
     const capitulos = await respuesta.json();
     if (capitulos.length > 0) {
-      const capLeido = capitulos [0];
+      const capLeido = capitulos[0];
       const capitulo = capLeido.letra;
       const nombre = capLeido.nombre;
       pagina = capLeido.paginaCap;
       try {
-        const data = await obtenerTotalCapitulos(CUIT, capitulo)
+        const data = await obtenerTotalCapitulos(CUIT, capitulo);
         if (data && data.length > 0) {
           const { CUIT, capitulo, maximo, score, porcentaje } = data[0]; // Desestructura los valores
-          const elemento = [
-            capitulo, '##', nombre, maximo, score, porcentaje
-          ];
+          const elemento = [capitulo, "##", nombre, maximo, score, porcentaje];
+          tablaMenuEs.push(elemento);
+        } else {
+          // Si no hay totales, maneja el caso especial
+          const elemento = [capitulo, "##", nombre, null, null, null];
+          if (primeraVez == 0) {
+            elemento[1] = pagina;
+            primeraVez = 1;
+          }
           tablaMenuEs.push(elemento);
         }
-          else {    // Si no hay totales, maneja el caso especial
-            const elemento = [
-              capitulo, '##', nombre, null, null, null,
-            ];
-            if (primeraVez == 0) {
-              elemento[1] = pagina;
-              primeraVez = 1;
-            }
-            tablaMenuEs.push(elemento);
-          }              
-      }
-      catch(error) {
-        console.error('Error al obtener los datos:', error);
-      };
-    }
       } catch (error) {
-      console.error('Error en la solicitud:', error);
+        console.error("Error al obtener los datos:", error);
+      }
+    }
+  } catch (error) {
+    console.error("Error en la solicitud:", error);
   }
 }
 
 // ::::::::::::::::::::::------------------------------------------
 async function obtenerTotalCapitulos(CUIT, capitulo) {
   try {
-    const response = await fetch(`/totalCapitulos?CUIT=${CUIT}&capitulo=${capitulo}`);
+    const response = await fetch(
+      `/totalCapitulos?CUIT=${CUIT}&capitulo=${capitulo}`
+    );
 
     if (response.ok) {
       const data = await response.json();
       return data; // Devuelve los datos obtenidos si la respuesta es exitosa
     } else {
-      console.error('Error en la respuesta:', response.status, response.statusText);
+      console.error(
+        "Error en la respuesta:",
+        response.status,
+        response.statusText
+      );
       return null;
     }
   } catch (error) {
-    console.error('Error en la solicitud:', error);
+    console.error("Error en la solicitud:", error);
     return null;
   }
 }
 
 // ::::::::::::::::::::::------------------------------------------
 function completarHtml() {
-
   let totmaximo = 0;
   let totcalif = 0;
   let totporcien = 0;
   let numeroConPunto = 0;
 
   //  Agrega a la tabla un ultimo registro de Resumen General
-  const elemento = [
-    null, null, 'Resumen General:', null, null, null
-  ];
+  const elemento = [null, null, "Resumen General:", null, null, null];
   tablaMenuEs.push(elemento);
 
   tablaMenuA = tablaMenuEs;
@@ -135,117 +133,111 @@ function completarHtml() {
   let tablaIndice = document.getElementById("tablaIndiceCapitulos");
   for (i = 0; i < tablaMenuA.length; i++) {
     //lineaDatosFd = tablaIndice.insertRow();
-    let lineaDatosFd = tablaIndice.insertRow();  
+    let lineaDatosFd = tablaIndice.insertRow();
 
     let celdaNombre = lineaDatosFd.insertCell(-1);
     celdaNombre.textContent = tablaMenuA[i][0];
 
     // Crear la segunda celda (columna) como un enlace:
     // un elemento <a> con el valor de tablaMenuA[i][1]
-    // como su atributo href, y luego lo agregamos como hijo de la celda de enlace (celdaEnlace). 
+    // como su atributo href, y luego lo agregamos como hijo de la celda de enlace (celdaEnlace).
 
     const celdaEnlace = lineaDatosFd.insertCell(-1);
-    const enlace = document.createElement('a'); // Crear un elemento <a>
+    const enlace = document.createElement("a"); // Crear un elemento <a>
     enlace.href = tablaMenuA[i][1]; // Establecer el atributo href con el valor correspondiente
     enlace.textContent = tablaMenuA[i][2]; // Establecer el texto del enlace con el tercer elemento de la tabla
-    enlace.style.textDecoration = 'none';
+    enlace.style.textDecoration = "none";
 
     if (tablaMenuA[i][1] == "##") {
-      enlace.style.color='gray';
+      enlace.style.color = "gray";
     }
 
-      // Agregar el enlace como hijo de la celda
-    if (i == tablaMenuA.length-1){
-      enlace.style.fontSize = '18px'; // Cambiar el tamaño de la fuente
-      enlace.style.fontWeight = 'bold'; // Hacer el texto en negrita
-      enlace.style.color='black';
+    // Agregar el enlace como hijo de la celda
+    if (i == tablaMenuA.length - 1) {
+      enlace.style.fontSize = "18px"; // Cambiar el tamaño de la fuente
+      enlace.style.fontWeight = "bold"; // Hacer el texto en negrita
+      enlace.style.color = "black";
 
-      celdaEnlace.style.textAlign = 'center'; // Centrar el contenido horizontalmente
-      celdaEnlace.style.display = 'flex';
-      celdaEnlace.style.justifyContent = 'center';
-      celdaEnlace.style.alignItems = 'center';
-    }  
-    celdaEnlace.appendChild(enlace); 
-    
+      celdaEnlace.style.textAlign = "center"; // Centrar el contenido horizontalmente
+      celdaEnlace.style.display = "flex";
+      celdaEnlace.style.justifyContent = "center";
+      celdaEnlace.style.alignItems = "center";
+    }
+    celdaEnlace.appendChild(enlace);
+
     celdaMaximo = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][3] === 0) {
-      tablaMenuA[i][3] = ""
+      tablaMenuA[i][3] = "";
     }
     if (tablaMenuA[i][3] > 0) {
-        numeroConPunto = formatearNumero(tablaMenuA[i][3]);
-      }
-      else {
-        numeroConPunto = ''
-      }
+      numeroConPunto = formatearNumero(tablaMenuA[i][3]);
+    } else {
+      numeroConPunto = "";
+    }
     celdaMaximo.textContent = numeroConPunto;
-    celdaMaximo.classList.add('ajustado-derecha');
+    celdaMaximo.classList.add("ajustado-derecha");
     totmaximo += tablaMenuA[i][3];
 
     celdaPuntos = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][4] === 0) {
-      tablaMenuA[i][4] = ""
+      tablaMenuA[i][4] = "";
     }
     if (tablaMenuA[i][4] > 0) {
       numeroConPunto = formatearNumero(tablaMenuA[i][4]);
-    }
-    else {
-      numeroConPunto = ''
+    } else {
+      numeroConPunto = "";
     }
     celdaPuntos.textContent = numeroConPunto;
-    celdaPuntos.classList.add('ajustado-derecha');
-    // totcalif = totcalif.toFixed(2);
+    celdaPuntos.classList.add("ajustado-derecha");
     totcalif += Number(tablaMenuA[i][4]);
 
     celdaPorciento = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][5] === 0) {
-      tablaMenuA[i][5] = ""
+      tablaMenuA[i][5] = "";
     }
     celdaPorciento.textContent = tablaMenuA[i][5];
-    celdaPorciento.classList.add('ajustado-derecha');
+    celdaPorciento.classList.add("ajustado-derecha");
 
     celdaPDF = lineaDatosFd.insertCell(-1);
     if (tablaMenuA[i][5] > 0) {
       // Crear el elemento <img>
-      const imgPdf = document.createElement('img');
-      
+      const imgPdf = document.createElement("img");
+
       // Establecer los atributos de la imagen
-      imgPdf.src = '../img/pdf (1).png';
+      imgPdf.src = "../img/pdf (1).png";
       imgPdf.width = 20;
-      imgPdf.style.display = 'block';
-      imgPdf.style.margin = '0 auto';
-      
-      // Agregar la imagen a la celda
-      celdaPDF.appendChild(imgPdf);
-      // Agregar el event listener para el clic
-      imgPdf.addEventListener('click', function() {
-          generarPDF()
+      imgPdf.style.display = "block";
+      imgPdf.style.margin = "0 auto";
+
+      celdaPDF.appendChild(imgPdf); // Agregar la imagen a la celda
+      imgPdf.addEventListener("click", function () {
+        // Agregar el event listener para el clic
+        generarPDF();
       });
-    }
-     else {
-      celdaPDF.textContent = '';
+    } else {
+      celdaPDF.textContent = "";
     }
 
-    if (i == tablaMenuA.length-1){
+    if (i == tablaMenuA.length - 1) {
       const numeroFormateadoMx = formatearNumero(totmaximo);
       celdaMaximo.textContent = numeroFormateadoMx;
 
-      totcalif = totcalif.toFixed(2);      
+      totcalif = totcalif.toFixed(2);
 
       const numeroFormateado = formatearNumero(totcalif);
       celdaPuntos.textContent = numeroFormateado;
 
-      celdaPorciento.style.fontWeight = 'bold'; // Hacer el texto en negrita
+      celdaPorciento.style.fontWeight = "bold"; // Hacer el texto en negrita
       if (totmaximo > 0) {
-        celdaPorciento.textContent = ((totcalif / totmaximo)*100).toFixed(2)
+        celdaPorciento.textContent = ((totcalif / totmaximo) * 100).toFixed(2);
+      } else {
+        celdaPorciento.textContent = "";
       }
-        else {
-          celdaPorciento.textContent = "";
-        }
 
       if (!totcalif > 0) {
-        celdaMaximo.textContent = '';
-        celdaPuntos.textContent = '';
-        celdaPorciento.textContent = '';
+        celdaMaximo.textContent = "";
+        celdaPuntos.textContent = "";
+        celdaPorciento.textContent = "";
       }
     }
   }
@@ -253,9 +245,9 @@ function completarHtml() {
 
 // ::::::::::::::::::::::------------------------------------------
 function formatearNumero(numero) {
-  let partes = numero.toString().split('.');
+  let partes = numero.toString().split(".");
   partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return partes.join(',');
+  return partes.join(",");
 }
 
 recuperarRespuestas(CUIT, capitulo);
@@ -264,16 +256,16 @@ recuperarRespuestas(CUIT, capitulo);
 
 async function recuperarPreguntas() {
   try {
-    const response = await fetch('/preguntas');
+    const response = await fetch("/preguntas");
     if (response.ok) {
       const result = await response.json();
       return Array.isArray(result) ? result : []; // Asegura devolver un arreglo
     } else {
-      console.error('Error al obtener las preguntas:', response.statusText);
+      console.error("Error al obtener las preguntas:", response.statusText);
       return [];
     }
   } catch (error) {
-    console.error('Error al realizar la solicitud:', error);
+    console.error("Error al realizar la solicitud:", error);
     return [];
   }
 }
@@ -282,42 +274,54 @@ async function recuperarPreguntas() {
 
 async function obtenerDatos() {
   try {
-    const response = await fetch('/preguntas');
+    const response = await fetch("/preguntas");
     if (response.ok) {
       const result = await response.json();
       // Devolver directamente los datos recibidos
       return result;
     } else {
-      console.error('Error al obtener los datos:', response.status, response.statusText);
+      console.error(
+        "Error al obtener los datos:",
+        response.status,
+        response.statusText
+      );
       return [];
     }
   } catch (error) {
-    console.error('Error al realizar la solicitud:', error);
+    console.error("Error al realizar la solicitud:", error);
     return [];
   }
 }
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-async function recuperarRespuestas(CUIT, capitulo){
+async function recuperarRespuestas(CUIT, capitulo) {
   respuestas = await obtenerRespuestas(CUIT, capitulo);
-  const primerRespuesta = respuestas [0];
+  const primerRespuesta = respuestas[0];
   direct3o4 = primerRespuesta.respuesta[0]; // saca si es tabla 1 o tabla2
 }
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-async function obtenerRespuestas(CUIT, capitulo) {// leo las respuestas del CUIT para el capítulo
+async function obtenerRespuestas(CUIT, capitulo) {
+  // leo las respuestas del CUIT para el capítulo
   try {
-    const response = await fetch(`/busca-respuesta-capitulo?CUIT=${CUIT}&capitulo=${capitulo}`);
+    const response = await fetch(
+      `/busca-respuesta-capitulo?CUIT=${CUIT}&capitulo=${capitulo}`
+    );
     if (response.ok) {
       const result = await response.json();
       return result.records || []; // Devuelve los registros o un arreglo vacío
     } else {
-      console.error(`Sin respuesta para capitulo ${capitulo} en obtenerRespuestas`);
+      console.error(
+        `Sin respuesta para capitulo ${capitulo} en obtenerRespuestas`
+      );
     }
   } catch (error) {
-    console.error('Error al realizar la solicitud en obtenerRespuestas:', error);
+    console.error(
+      "Error al realizar la solicitud en obtenerRespuestas:",
+      error
+    );
   }
   return [];
 }
@@ -325,30 +329,32 @@ async function obtenerRespuestas(CUIT, capitulo) {// leo las respuestas del CUIT
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 async function cambiarDatos(lineToPrint) {
-
   if (!Array.isArray(lineToPrint)) {
-    console.error('lineToPrint no es un array:', lineToPrint);
+    console.error("lineToPrint no es un array:", lineToPrint);
     return;
   }
 
   const txtResptas = await leerTextoRespuestas();
   if (!txtResptas || txtResptas.length === 0) {
-    console.error('leerTextoRespuestas no devolvió resultados válidos');
+    console.error("leerTextoRespuestas no devolvió resultados válidos");
     return;
   }
 
   const txtCheck = await leerTextoCheck();
   if (!txtCheck || txtCheck.length === 0) {
-    console.error('leerTextoCheck no devolvió resultados válidos');
+    console.error("leerTextoCheck no devolvió resultados válidos");
     return;
   }
 
-  lineToPrint.forEach(fila => {    // Analiza cada fila del PDF (que es cada pregunta)
-    // selecciona la respuesta que tiene los valores de la seccion 
+  lineToPrint.forEach((fila) => {
+    // Analiza cada fila del PDF (que es cada pregunta)
+    // selecciona la respuesta que tiene los valores de la seccion
     // la seccion que se busca es la de la pregunta procesada (fila)
-    const respuesta = respuestas.find(respuesta => respuesta.seccion === fila.Seccion);
+    const respuesta = respuestas.find(
+      (respuesta) => respuesta.seccion === fila.Seccion
+    );
     const arrayRespuesta = respuesta.respuesta;
-    fila.nroRpt = arrayRespuesta[fila.Numero - 1]
+    fila.nroRpt = arrayRespuesta[fila.Numero - 1];
 
     switch (fila.tipo) {
       case 1:
@@ -363,124 +369,139 @@ async function cambiarDatos(lineToPrint) {
     }
 
     if (fila.tipo > 40 && fila.tipo < 50) {
-        let indicesCheck = 0;
-        const filaCheckRptas = txtCheck.find(item => Number(item.pregunta) === fila.tipo);
-        if (!filaCheckRptas) {
-          console.log("No se encontró ninguna fila con la pregunta:", fila.tipo);
-          return;
-        }
+      let indicesCheck = 0;
+      const filaCheckRptas = txtCheck.find(
+        (item) => Number(item.pregunta) === fila.tipo
+      );
+      if (!filaCheckRptas) {
+        console.log("No se encontró ninguna fila con la pregunta:", fila.tipo);
+        return;
+      }
 
-        if (fila.tipo === 42 || fila.tipo === 43) {
-          indicesCheck = arrayRespuesta;
+      if (fila.tipo === 42 || fila.tipo === 43) {
+        indicesCheck = arrayRespuesta;
+      } else {
+        indicesCheck = arrayRespuesta[fila.Numero - 1]; // es la respuesta para tipo 41
+      }
+      // console.log('indicesCheck:', indicesCheck);
+
+      let textoConcatenado = "";
+
+      indicesCheck.forEach((indice) => {
+        if (indice > filaCheckRptas.textos.length) {
+          console.error(
+            `Índice ${indice} fuera de los límites del array valores`
+          );
+          console.log("largo filacheckrptas :  ", filaCheckRptas.textos.length);
         } else {
-          indicesCheck = arrayRespuesta[fila.Numero - 1];  // es la respuesta para tipo 41
+          textoConcatenado += filaCheckRptas.textos[indice - 1];
+          textoConcatenado += "  ";
         }
-        // console.log('indicesCheck:', indicesCheck);
-        
+      });
+      fila.respta = textoConcatenado;
 
-        let textoConcatenado = "";
+      let restar = 0;
+      if ((fila.tipo = 41)) {
+        restar = 1;
+      }
 
-        indicesCheck.forEach(indice => {
-          if (indice > filaCheckRptas.textos.length) {
-            console.error(`Índice ${indice} fuera de los límites del array valores`);
-            console.log ('largo filacheckrptas :  ' , filaCheckRptas.textos.length);
-          }
-            else {
-              textoConcatenado += filaCheckRptas.textos[indice - 1];
-              textoConcatenado += "  ";
-            } 
-        });
-        fila.respta = textoConcatenado
-      
-        let restar = 0;  
-        if (fila.tipo = 41) {
-          restar = 1}
-
-        const row = listaPrecios.find (item => 
+      const row = listaPrecios.find(
+        (item) =>
           item.tabla == direct3o4 &&
-          item.capitulo === 'A' &&
+          item.capitulo === "A" &&
           item.seccion == fila.Seccion &&
           item.pregunta == fila.Numero
-        )
+      );
 
-        let precio = 0;
-        indicesCheck.forEach(indice => {
-          precio += parseFloat(row.precio[indice-restar]);
-        })
+      let precio = 0;
+      indicesCheck.forEach((indice) => {
+        precio += parseFloat(row.precio[indice - restar]);
+      });
 
-        fila.precio = precio;
-        return;
-    } 
+      fila.precio = precio;
+      return;
+    }
 
     if (fila.tipo > 50 && fila.tipo < 60) {
-        const filaTxtRptas = txtResptas.find(item => item.pregunta === fila.tipo);
-        if (!filaTxtRptas) {
-          console.log("No se encontró ninguna fila con la pregunta:", fila.tipo);
-        }
+      const filaTxtRptas = txtResptas.find(
+        (item) => item.pregunta === fila.tipo
+      );
+      if (!filaTxtRptas) {
+        console.log("No se encontró ninguna fila con la pregunta:", fila.tipo);
+      }
 
-        const valTxtRptas = filaTxtRptas.textos;
-        // el indice que da el valor de valTxtRptas es el valor de la respuesta menos 1
-        // el valor de la respuesta esta en el string de respuestas arrayRespuesta
-        // la posición dentro del string de arrayRespuesta es el numero de pregunta menos 1
-        // el numero de pregunta es  fila.Numero
+      const valTxtRptas = filaTxtRptas.textos;
+      // el indice que da el valor de valTxtRptas es el valor de la respuesta menos 1
+      // el valor de la respuesta esta en el string de respuestas arrayRespuesta
+      // la posición dentro del string de arrayRespuesta es el numero de pregunta menos 1
+      // el numero de pregunta es  fila.Numero
 
-        const indArrayRespuesta = fila.Numero - 1;
-        const valRespuesta = arrayRespuesta[indArrayRespuesta];
-        const indValTxtRptas = valRespuesta - 1;
-        fila.respta = valTxtRptas[indValTxtRptas];
+      const indArrayRespuesta = fila.Numero - 1;
+      const valRespuesta = arrayRespuesta[indArrayRespuesta];
+      const indValTxtRptas = valRespuesta - 1;
+      fila.respta = valTxtRptas[indValTxtRptas];
     }
 
     if (fila.nroRpt == 9) {
       fila.respta = "No aplica";
       fila.precio = 0;
-      return
-    }  
+      return;
+    }
     // buscar en el array de listaPrecios la fila que corresponde a tabla-capitulo-seccion-pregunta
     // obtenida la fila, tengo que sacar el precio segun el indice
     // el indice es el valor que se respondió menos 1 (si respondio 1 es la posición 0)
 
-    const row = listaPrecios.find (item => 
-      item.tabla == direct3o4 &&
-      item.capitulo === 'A' &&
-      item.seccion == fila.Seccion &&
-      item.pregunta == fila.Numero
-    )
+    const row = listaPrecios.find(
+      (item) =>
+        item.tabla == direct3o4 &&
+        item.capitulo === "A" &&
+        item.seccion == fila.Seccion &&
+        item.pregunta == fila.Numero
+    );
 
     if (row) {
-      if (fila.tipo == 3) {  // si tipo es 3, es cantidad justa y arranca con 0, no hay que restar 1
-          indiceParaPrecio = fila.nroRpt; 
+      if (fila.tipo == 3) {
+        // si tipo es 3, es cantidad justa y arranca con 0, no hay que restar 1
+        indiceParaPrecio = fila.nroRpt;
       } else {
-          indiceParaPrecio = fila.nroRpt - 1;
-        }
-      if (Array.isArray(row.precio) && indiceParaPrecio < row.precio.length) {
-          const precio = row.precio[indiceParaPrecio];
-          fila.precio = precio;
-      } else {
-          console.log(`El índice está fuera de los límites del array precio.  indice: ${indiceParaPrecio} `);
-          console.log(`seccion ${fila.Seccion}, numero ${fila.Numero}`)
-        }
-    } else {
-        console.log ('no encontro la fila')
+        indiceParaPrecio = fila.nroRpt - 1;
       }
-  })
-} 
+      if (Array.isArray(row.precio) && indiceParaPrecio < row.precio.length) {
+        const precio = row.precio[indiceParaPrecio];
+        fila.precio = precio;
+      } else {
+        console.log(
+          `El índice está fuera de los límites del array precio.  indice: ${indiceParaPrecio} `
+        );
+        console.log(`seccion ${fila.Seccion}, numero ${fila.Numero}`);
+      }
+    } else {
+      console.log("no encontro la fila");
+    }
+  });
+}
 
-async function leerTextoRespuestas () {
+async function leerTextoRespuestas() {
   try {
     const response = await fetch(`/textorespuestas`); //('lectura tabla texto respuestas:)
     if (response.ok) {
       const result = await response.json();
       return result || []; // Devuelve los registros o un arreglo vacío
     } else {
-      console.error(`Sin respuesta para capitulo ${capitulo} en obtenerRespuestas`);
+      console.error(
+        `Sin respuesta para capitulo ${capitulo} en obtenerRespuestas`
+      );
     }
   } catch (error) {
-    console.error('Error al realizar la solicitud en leerTextoRespuestas ', error);
+    console.error(
+      "Error al realizar la solicitud en leerTextoRespuestas ",
+      error
+    );
   }
   return [];
 }
 
-async function leerTextoCheck () {
+async function leerTextoCheck() {
   try {
     const response = await fetch(`/textocheck`); //('lectura tabla texto checks)
     if (response.ok) {
@@ -490,7 +511,7 @@ async function leerTextoCheck () {
       console.error(`Sin respuesta para async function leerTextoCheck ()`);
     }
   } catch (error) {
-    console.error('Error al realizar la solicitud en leerTextoCheck ', error);
+    console.error("Error al realizar la solicitud en leerTextoCheck ", error);
   }
   return [];
 }
@@ -502,28 +523,32 @@ async function generarPDF() {
   if (Array.isArray(lineToPrint)) {
     await cambiarDatos(lineToPrint);
   } else {
-    console.error('recuperarPreguntas no devolvió un arreglo:', lineToPrint);
+    console.error("recuperarPreguntas no devolvió un arreglo:", lineToPrint);
     return;
-    }
+  }
 
   // Inicializar jsPDF
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
   // Agregar título
-  const CUIT = localStorage.getItem('CUIT');
-  const usuario = localStorage.getItem('nombre');
+  const CUIT = localStorage.getItem("CUIT");
+  const usuario = localStorage.getItem("nombre");
 
   // Agrega el score de la respuesta
   doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor('#007bff'); // Color azul brillante
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor("#007bff"); // Color azul brillante
 
-  doc.text(`------------------- Informe de Datos para CUIT: ${CUIT},   Usuario: ${usuario} \n \n GOBIERNO CORPORATIVO`, 10, 10);
+  doc.text(
+    `------------------- Informe de Datos para CUIT: ${CUIT},   Usuario: ${usuario} \n \n GOBIERNO CORPORATIVO`,
+    10,
+    10
+  );
 
   doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor('#0000ff'); // Color azul brillante
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor("#0000ff"); // Color azul brillante
   doc.text(`\n\n C: Capitulo, S: Sección, Nro: Número`, 10, 20);
 
   const columnStyles = {
@@ -531,11 +556,11 @@ async function generarPDF() {
     Seccion: { cellWidth: 5 },
     seccionRomano: { cellWidth: 5 },
     Numero: { cellWidth: 10 },
-    Descrip: { cellWidth: 60 }, // Aumentar el ancho para Descrip si el texto es largo
+    Descrip: { cellWidth: 60 },
     tipo: { cellWidth: 10 },
     nroRpt: { cellWidth: 10 },
-    respta: { cellWidth: 20 }, // Aumentar el ancho para respta si el texto es largo
-    precio: { cellWidth: 10 }
+    respta: { cellWidth: 20 },
+    precio: { cellWidth: 10 },
   };
 
   const columnas = [
@@ -547,20 +572,20 @@ async function generarPDF() {
     { title: "TR", dataKey: "tipo" },
     { title: "NR", dataKey: "nroRpt" },
     { title: "Respuesta", dataKey: "respta" },
-    { title: "Score", dataKey: "precio" },      
+    { title: "Score", dataKey: "precio" },
   ];
 
   doc.autoTable({
     startY: 30,
-    head: [columnas.map(col => col.title)],
-    body: lineToPrint.map(row => columnas.map(col => row[col.dataKey])),
+    head: [columnas.map((col) => col.title)],
+    body: lineToPrint.map((row) => columnas.map((col) => row[col.dataKey])),
     columnStyles: columnStyles,
     styles: { cellPadding: 2, fontSize: 8 },
-    bodyStyles: { valign: 'top' },
-    theme: 'grid',
+    bodyStyles: { valign: "top" },
+    theme: "grid",
     // Asegúrate de que el texto se envuelva en la celda
     didDrawCell: (data) => {
-      if (data.column.dataKey === 'Descrip' && data.cell.raw.length > 0) {
+      if (data.column.dataKey === "Descrip" && data.cell.raw.length > 0) {
         const text = data.cell.raw;
         const textLines = doc.splitTextToSize(text, data.cell.width);
         doc.text(textLines, data.cell.x, data.cell.y + 2);
@@ -571,19 +596,18 @@ async function generarPDF() {
 
   // Guardar el PDF :  doc.save('informe.pdf');
   // Convertir el PDF a un Blob
-  const pdfBlob = doc.output('blob');
+  const pdfBlob = doc.output("blob");
 
   // Crear un URL para el Blob
   const pdfUrl = URL.createObjectURL(pdfBlob);
 
   // Mostrar el PDF en un iframe (en la misma página)
-  const iframe = document.createElement('iframe');
-  iframe.style.width = '100%';
-  iframe.style.height = '100vh';
+  const iframe = document.createElement("iframe");
+  iframe.style.width = "100%";
+  iframe.style.height = "100vh";
   iframe.src = pdfUrl;
   // document.body.appendChild(iframe);
   window.open(pdfUrl);
-
 
   for (const fila of lineToPrint) {
     const seccionNumerica = fila.Seccion ? fila.Seccion : "111"; // Añade un valor por defecto si 'Seccion' es nulo
@@ -603,36 +627,34 @@ async function generarPDF() {
 
 // Función para escribir los detalles de movimientos en la tabla MySQL
 async function grabarParciales(datos) {
-
   const body = {
     capitulo: datos.capitulo,
     seccion: datos.seccion,
-    numero: datos.numero, 
-    pregunta: datos.pregunta, 
-    respuesta: datos.respuesta, 
+    numero: datos.numero,
+    pregunta: datos.pregunta,
+    respuesta: datos.respuesta,
     parcial: datos.precio,
   };
 
-try {
-const response = await fetch("/grabaParciales", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(body),
-  credentials: "include",
-});
+  try {
+    const response = await fetch("/grabaParciales", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      credentials: "include",
+    });
 
-const result = await response.json();
-if (result.success) {
-  console.log("no hay error");
-} else {
-  throw new Error(result.error || "Error desconocido grabar parciales");
+    const result = await response.json();
+    if (result.success) {
+      console.log("no hay error");
+    } else {
+      throw new Error(result.error || "Error desconocido grabar parciales");
+    }
+  } catch (error) {
+    console.log("Error:", error);
+    alert("estamos en el error (ins 2): " + error.message);
+    throw error; // Rechaza la promesa en caso de error
+  }
 }
-} 
-catch (error) {
-console.log("Error:", error);
-alert("estamos en el error (ins 2): " + error.message);
-throw error; // Rechaza la promesa en caso de error
-}
-};
