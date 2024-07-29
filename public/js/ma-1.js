@@ -10,6 +10,19 @@ let checkboxesSeleccionados = [];
 
 // obtenerValoresSeleccionados :::::::::::::::::::::
 
+// modulo1.js
+function usarListaPrecios() {
+  if (global.listaPrecios) {
+    console.table(global.listaPrecios);
+    // Tu lógica con la lista de precios
+  } else {
+    console.error('La lista de precios no está disponible.');
+  }
+}
+
+usarListaPrecios();
+
+
 function obtenerValoresSeleccionados() {
   respuestas = [];
   const grupos = [
@@ -219,6 +232,16 @@ document
     valores = 0;
     event.preventDefault(); // Prevenir el envío del formulario
 
+    async function main() {
+      // lee la lista de precios
+      const listaPrecios = await leerListaPrecios();
+      console.table(listaPrecios);
+    }
+    
+    // Ejecuta la función main para leer los precios.
+    main();
+    
+
     // obtener los valores de radio
     obtenerValoresSeleccionados();
     console.log(`indice de respuestas faltantes ${filasFaltantes}`);
@@ -271,6 +294,52 @@ document
 
     }
   });
+
+
+  async function recuperarPreguntas() {
+    try {
+      const response = await fetch('/preguntas');
+      if (response.ok) {
+        const result = await response.json();
+        // console.log('Datos obtenidos de recuperarPreguntas:', result); // Agrega esta línea para verificar los datos obtenidos
+        return Array.isArray(result) ? result : []; // Asegura devolver un arreglo
+      } else {
+        console.error('Error al obtener las preguntas:', response.statusText);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error al realizar la solicitud:', error);
+      return [];
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // limpiarSelecciones :::::::::::::::::::::::::::::::::
 

@@ -29,6 +29,10 @@ app.use(session({
 // Middleware para servir archivos estáticos::::::::::::::::::::::::::::::
 app.use(express.static(path.join(__dirname, '../public')));
 
+
+// Importa el archivo batch para que se ejecute al iniciar la aplicación:::::
+// require('../public/js/batch.js'); // para enviar correos....
+
 // Conexión a la base de datos::::::::::::::::::::::::::::::::::::::::::::::
 const conexion = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -86,7 +90,43 @@ app.post('/insertar2', (req, res) => {
     });
 });
 
+// Grabacion de Parciales  :::::::::::::::::::::::::::::::::::::::::::::::::
+app.post('/grabaParciales', (req, res) => {
+  if (!req.session.user){
+      return res.status(401).json({ error: 'No estás autenticado' });
+  }
+  const { capitulo, seccion, numero, pregunta, respuesta, parcial} = req.body;
+  const usuario = req.session.user.username; // Obtener el usuario de la sesión
+  const CUIT = req.session.user.CUIT;
 
+  console.log (`  contenido de req body ${req.body}`)
+
+  if (!usuario) {
+      return res.status(400).json({ error: 'Usuario no definido en la sesión' });
+  }
+
+  // Convertir el array de respuesta a un string JSON
+  const respuestaJSON = JSON.stringify(respuesta);   
+
+  console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, numero, pregunta, respuestaJSON, parcial });
+
+  const nuevoParcial = 'INSERT INTO parciales (CUIT, usuario, capitulo, seccion, numero, pregunta, respuesta, parcial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  const datosAPasar = [CUIT, usuario, capitulo, seccion, numero, pregunta, respuestaJSON, parcial];
+
+  conexion.query(nuevoParcial, datosAPasar, function (error, lista) {
+      if (error) {
+          if (error.code === 'ER_DUP_ENTRY') {
+              res.status(409).json({ error: 'Ya existe una respuesta para esta combinación de capitulo y seccion' });
+          } else {
+          console.log('Error:', error);
+          res.status(500).json({ error: error.message });
+      }
+      } else {
+          console.log(lista.insertId, lista.fieldCount);
+          res.status(200).json({ success: true });
+      }
+  });
+});
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -114,7 +154,11 @@ app.post('/api/login', (req, res) => {
             res.status(500).send('Error en la base de datos');
         } else if (results.length > 0) {
             const user = results[0]; // Accede a la primera fila de los resultados
-            req.session.user = { username: user.username, firstName: user.Nombre, lastName: user.Apellido , CUIT: user.CUIT}; // Guarda el usuario como un objeto en la sesión
+            req.session.user = {
+               username: user.username,
+               firstName: user.Nombre, 
+               lastName: user.Apellido, 
+               CUIT: user.CUIT}; // Guarda el usuario como un objeto en la sesión
             // res.status(200).send('Login exitoso');
             res.status(200).json({ message: 'Login exitoso', user: { firstName: user.Nombre, lastName: user.Apellido, CUIT: user.CUIT, ingresado: user.ingresado } }); 
         } else {
@@ -148,7 +192,6 @@ app.post('/api/updateIngresado', (req, res) => {
 });
 
 
-
 // Ruta protegida que requiere autenticación :::::::::::::::::::::::::::::::::::::::::.
 app.get('/protected', (req, res) => {
     if (req.session.user) {
@@ -157,6 +200,7 @@ app.get('/protected', (req, res) => {
         res.status(401).send('Necesitas iniciar sesión');
     }
 });
+
 
 // Ruta para obtener todos los registros de la tabla secciones ::::::::::::::::::::
 app.get('/secciones', (req, res) => {
@@ -215,9 +259,6 @@ app.get('/totalCapitulos', (req, res) => {
         res.status(400).json({ error: 'Faltan parámetros CUIT o capitulo' });
         return;
       }
-
-    // console.log(`Recibido CUIT: ${CUIT}, capitulo: ${capitulo}`);
-
     const query = 'SELECT * FROM totalcapitulos WHERE CUIT = ? AND capitulo = ?';
   
     conexion.query(query, [CUIT, capitulo], (error, results, fields) => {
@@ -226,9 +267,7 @@ app.get('/totalCapitulos', (req, res) => {
           console.log("error servidor al obtener registros");
           return;
         }
-        // console.log('Resultados de la consulta:', results);
         
-        // Verificar si hay al menos un registro
         if (results.length > 0) {
           res.json(results);
         } else {
@@ -236,6 +275,19 @@ app.get('/totalCapitulos', (req, res) => {
         }
       });
     });
+
+// Ruta para obtener toda la lista de precios ::::::::::::::::::::
+app.get('/leeListaPrecios', (req, res) => {
+  const query = 'SELECT * FROM listaprecios';
+
+  conexion.query(query, (error, results, fields) => {
+    if (error) {
+      res.status(500).json({ error: 'Error al obtener los registros' });
+      return;
+    }
+    res.json(results);
+  });
+});
 
 // Ruta para obtener todos las respuestas de la tabla ::::::::::::::::::::
 app.get('/respuestas', (req, res) => {
@@ -252,7 +304,7 @@ app.get('/respuestas', (req, res) => {
 
 // Ruta para obtener todos las preguntas de la tabla ::::::::::::::::::::
 app.get('/preguntas', (req, res) => {
-  const query = 'SELECT * FROM preguntas';
+  const query = 'SELECT * FROM preguntas ORDER BY Capitulo, Seccion, Numero';
 
   conexion.query(query, (error, results, fields) => {
     if (error) {
@@ -262,6 +314,7 @@ app.get('/preguntas', (req, res) => {
     res.json(results);
   });
 });
+
 
 // Ruta para saber si existe respuesta para la seccion ::::::::::::::::::::
 app.get('/busca-respuesta', (req, res) => {
@@ -387,34 +440,6 @@ app.get('/textocheck', (req, res) => {
     res.json(results);
   });
 });
-
-// app.get('/obtenerRespuestas', (req, res) => {
-//     const consulta = 'SELECT * FROM respuestas WHERE id = 5';
-
-//     conexion.query(consulta, function (error, resultados) {
-//         if (error) {
-//             console.log('Error:', error);
-//             res.status(500).json({ error: error.message });
-//         } else {
-
-//         const respuesta = respuestas.find(
-//         (respuesta) => respuesta.cuit === cuit && respuesta.capitulo === capitulo && respuesta.seccion === seccion
-//         );
-
-//         if (respuesta) {
-//             res.json({ existe: true, score: respuesta.score});
-//         } else {
-//             res.json({ existe: false });
-//         }
-//   )});
-
-/*
-Backend:
-
-En la ruta /validar-respuesta, usamos find en lugar de some para encontrar el registro específico que coincida con cuit, capitulo, y seccion.
-Si se encuentra el registro, devolvemos un JSON con { existe: true, score: respuesta.score }.
-Si no se encuentra, devolvemos { existe: false }.*/
-
   
 // Captura todas las otras rutas para mostrar un 404 :::::::::::::::::::::::::::::::::
 app.get('*', (req, res) => {
