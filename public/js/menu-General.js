@@ -50,7 +50,6 @@ async function procesarCapitulos() {
   for (let i = 1; i < 7; i++) {
     await leeCapitulos(i); // Espera a que cada llamada se complete antes de proceder
   }
-  // console.log('Proceso completado:', tablaMenuEs);
   completarHtml(); // Llama a completarHtml después de procesar todos los capítulos
 }
 
@@ -128,7 +127,6 @@ function completarHtml() {
   tablaMenuEs.push(elemento);
 
   tablaMenuA = tablaMenuEs;
-  // console.table(tablaMenuA);
 
   let tablaIndice = document.getElementById("tablaIndiceCapitulos");
   for (i = 0; i < tablaMenuA.length; i++) {
@@ -383,15 +381,13 @@ async function cambiarDatos(lineToPrint) {
       } else {
         indicesCheck = arrayRespuesta[fila.Numero - 1]; // es la respuesta para tipo 41
       }
-      // console.log('indicesCheck:', indicesCheck);
 
       let textoConcatenado = "";
 
       indicesCheck.forEach((indice) => {
         if (indice > filaCheckRptas.textos.length) {
           console.error(
-            `Índice ${indice} fuera de los límites del array valores`
-          );
+            `Índice ${indice} fuera de los límites del array valores`);
           console.log("largo filacheckrptas :  ", filaCheckRptas.textos.length);
         } else {
           textoConcatenado += filaCheckRptas.textos[indice - 1];
@@ -471,8 +467,7 @@ async function cambiarDatos(lineToPrint) {
         fila.precio = precio;
       } else {
         console.log(
-          `El índice está fuera de los límites del array precio.  indice: ${indiceParaPrecio} `
-        );
+          `El índice está fuera de los límites del array precio.  indice: ${indiceParaPrecio} `);
         console.log(`seccion ${fila.Seccion}, numero ${fila.Numero}`);
       }
     } else {

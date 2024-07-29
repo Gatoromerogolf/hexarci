@@ -99,17 +99,11 @@ app.post('/grabaParciales', (req, res) => {
   const usuario = req.session.user.username; // Obtener el usuario de la sesión
   const CUIT = req.session.user.CUIT;
 
-  console.log (`  contenido de req body ${req.body}`)
-
   if (!usuario) {
       return res.status(400).json({ error: 'Usuario no definido en la sesión' });
   }
 
-  // Convertir el array de respuesta a un string JSON
-  const respuestaJSON = JSON.stringify(respuesta);   
-
-  console.log('Datos recibidos:', { CUIT, usuario, capitulo, seccion, numero, pregunta, respuestaJSON, parcial });
-
+  const respuestaJSON = JSON.stringify(respuesta);   // Convertir el array de respuesta a un string JSON  
   const nuevoParcial = 'INSERT INTO parciales (CUIT, usuario, capitulo, seccion, numero, pregunta, respuesta, parcial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
   const datosAPasar = [CUIT, usuario, capitulo, seccion, numero, pregunta, respuestaJSON, parcial];
 
@@ -122,7 +116,7 @@ app.post('/grabaParciales', (req, res) => {
           res.status(500).json({ error: error.message });
       }
       } else {
-          console.log(lista.insertId, lista.fieldCount);
+          // console.log(lista.insertId, lista.fieldCount);
           res.status(200).json({ success: true });
       }
   });
@@ -206,7 +200,6 @@ app.get('/protected', (req, res) => {
 app.get('/secciones', (req, res) => {
     // obtiene el indice de la consulta
     const indice = parseInt(req.query.indice) || 0;
-    // console.log (`el indice leido en /secciones:  ${indice}`)
     const query = 'SELECT * FROM secciones WHERE seccion = ?';
   
     conexion.query(query, [indice], (error, results, fields) => {
@@ -230,7 +223,6 @@ app.get('/secciones', (req, res) => {
 app.get('/capitulos', (req, res) => {
     // obtiene el indice de la consulta
     const indice = parseInt(req.query.indice) || 0;
-    // console.log (`el indice leido en /secciones:  ${indice}`)
     const query = 'SELECT * FROM capitulos WHERE ID = ?';
   
     conexion.query(query, [indice], (error, results, fields) => {
@@ -328,7 +320,6 @@ app.get('/busca-respuesta', (req, res) => {
       }
     const query = 'SELECT * FROM respuestas WHERE cuit = ? AND capitulo = ? AND seccion = ?';
     const values = [CUIT, capitulo, seccion];
-    // console.log(`valores que busca: ${values}`)
 
     conexion.query(query, values, (error, results, fields) => {
         if (error) {
@@ -338,11 +329,9 @@ app.get('/busca-respuesta', (req, res) => {
         }
 
         if (results.length > 0) {
-            // console.log (`encontro respuesta para seccion ${seccion}`)
-            // res.json({ exists: true, score: results[0].score });  esto solo devuelve el score
             res.json({ exists: true, record: results[0] });  //devuelve registro completo
           } else {
-            // console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
+            console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
             res.json({ exists: false });
           }
         });
@@ -369,7 +358,6 @@ app.get('/busca-respuesta-capitulo', (req, res) => {
       }
       if (results.length > 0) {
         res.json({ exists: true, records: results});
-        console.log('Resultados encontrados busca-respuesta-capitulo - despues json:', results);
       } else {
         console.log (`no hay respuesta para CUIT ${CUIT} y capitulo ${capitulo} en busca-respuesta-capitulo`)
         res.json({ exists: false });
@@ -406,7 +394,7 @@ app.post('/total-Capitulo', (req, res) => {
             res.status(500).json({ error: error.message });
         }
         } else {
-            console.log(lista.insertId, lista.fieldCount);
+            // console.log(lista.insertId, lista.fieldCount);
             res.status(200).json({ success: true });
         }
     });
@@ -422,7 +410,6 @@ app.get('/textorespuestas', (req, res) => {
       res.status(500).json({ error: 'Error al obtener los registros' });
       return;
     }
-    console.log ('lectura tabla texto:' , results )
     res.json(results);
   });
 });
