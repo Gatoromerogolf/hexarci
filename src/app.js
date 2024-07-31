@@ -26,10 +26,8 @@ app.use(session({
     cookie: { secure: false } // Debe ser true en producción si usas HTTPS
 }));
 
-
 // Middleware para servir archivos estáticos::::::::::::::::::::::::::::::
 app.use(express.static(path.join(__dirname, '../public')));
-
 
 // Importa el archivo batch para que se ejecute al iniciar la aplicación:::::
 // require('../public/js/batch.js'); // para enviar correos....
@@ -49,70 +47,6 @@ conexion.connect(function (err) {
     } else {
         console.log('Conexión exitosa a la base hexarci');
     }
-});
-
-// Inserción de registros en MySQL opcion 2 :::::::::::::::::::::::::::::::::::::
-app.post('/insertar2', (req, res) => {
-    if (!req.session.user){
-        return res.status(401).json({ error: 'No estás autenticado' });
-    }
-
-    const { capitulo, seccion, maximo, score, porcentaje, respuesta } = req.body;
-    const usuario = req.session.user.username; // Obtener el usuario de la sesión
-    const CUIT = req.session.user.CUIT;
-
-    if (!usuario) {
-        return res.status(400).json({ error: 'Usuario no definido en la sesión' });
-    }
-
-    const respuestaJSON = JSON.stringify(respuesta);// Convertir el array de respuesta a un string JSON   
-    const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const datosAPasar = [CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuestaJSON];
-
-    conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
-        if (error) {
-            if (error.code === 'ER_DUP_ENTRY') {
-                res.status(409).json({ error: 'Ya existe una respuesta para esta combinación de capitulo y seccion' });
-            } else {
-            console.log('Error:', error);
-            res.status(500).json({ error: error.message });
-        }
-        } else {
-            // console.log(lista.insertId, lista.fieldCount);
-            res.status(200).json({ success: true });
-        }
-    });
-});
-
-// Grabacion de Parciales  :::::::::::::::::::::::::::::::::::::::::::::::::
-app.post('/grabaParciales', (req, res) => {
-  if (!req.session.user){
-      return res.status(401).json({ error: 'No estás autenticado' });
-  }
-  const { capitulo, seccion, numero, pregunta, respuesta, parcial} = req.body;
-  const usuario = req.session.user.username; // Obtener el usuario de la sesión
-  const CUIT = req.session.user.CUIT;
-
-  if (!usuario) {
-      return res.status(400).json({ error: 'Usuario no definido en la sesión' });
-  }
-
-  const respuestaJSON = JSON.stringify(respuesta);   // Convertir el array de respuesta a un string JSON  
-  const nuevoParcial = 'INSERT INTO parciales (CUIT, usuario, capitulo, seccion, numero, pregunta, respuesta, parcial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-  const datosAPasar = [CUIT, usuario, capitulo, seccion, numero, pregunta, respuestaJSON, parcial];
-
-  conexion.query(nuevoParcial, datosAPasar, function (error, lista) {
-      if (error) {
-          if (error.code === 'ER_DUP_ENTRY') {
-              res.status(409).json({ error: 'Ya existe una respuesta para esta combinación de capitulo y seccion' });
-          } else {
-          console.log('Error:', error);
-          res.status(500).json({ error: error.message });
-      }
-      } else {
-          res.status(200).json({ success: true });
-      }
-  });
 });
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -183,9 +117,7 @@ Inicio de sesión: Envía solicitud de inicio de sesión al backend con las cred
 Respuesta del servidor: El servidor responde con un objeto JSON que contiene un mensaje y un objeto user que incluye firstName, lastName y CUIT.
 Acceso a CUIT: En el frontend, puedes acceder a CUIT utilizando user.CUIT una vez que hayas recibido y procesado la respuesta.
 De esta manera, puedes utilizar el CUIT en cualquier parte del frontend después de que el usuario haya iniciado sesión correctamente. Si necesitas mantener el estado de inicio de sesión y los datos del usuario entre diferentes páginas o sesiones, podrías considerar almacenar esta información en localStorage, sessionStorage, o en el estado de tu aplicación si estás usando una librería como React, Vue, etc.
-
 */
-
 
 // Ruta para actualizar el campo "ingresado" del usuario:::::::::::::::::::::::::::::::
 app.post('/api/updateIngresado', (req, res) => {
@@ -201,6 +133,104 @@ app.post('/api/updateIngresado', (req, res) => {
     res.json({ message: 'Campo ingresado actualizado correctamente' });
   });
 });
+
+// Inserción de registros en MySQL opcion 2 :::::::::::::::::::::::::::::::::::::
+app.post('/insertar2', (req, res) => {
+  if (!req.session.user){
+      return res.status(401).json({ error: 'No estás autenticado' });
+  }
+
+  const { capitulo, seccion, maximo, score, porcentaje, respuesta } = req.body;
+  const usuario = req.session.user.username; // Obtener el usuario de la sesión
+  const CUIT = req.session.user.CUIT;
+
+  if (!usuario) {
+      return res.status(400).json({ error: 'Usuario no definido en la sesión' });
+  }
+
+  const respuestaJSON = JSON.stringify(respuesta);// Convertir el array de respuesta a un string JSON   
+  const nuevoResultado = 'INSERT INTO respuestas (CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuesta) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  const datosAPasar = [CUIT, usuario, capitulo, seccion, maximo, score, porcentaje, respuestaJSON];
+
+  conexion.query(nuevoResultado, datosAPasar, function (error, lista) {
+      if (error) {
+          if (error.code === 'ER_DUP_ENTRY') {
+              res.status(409).json({ error: 'Ya existe una respuesta para esta combinación de capitulo y seccion' });
+          } else {
+          console.log('Error:', error);
+          res.status(500).json({ error: error.message });
+      }
+      } else {
+          // console.log(lista.insertId, lista.fieldCount);
+          res.status(200).json({ success: true });
+      }
+  });
+});
+
+// Grabacion de Parciales  :::::::::::::::::::::::::::::::::::::::::::::::::
+app.post('/grabaParciales', (req, res) => {
+if (!req.session.user){
+    return res.status(401).json({ error: 'No estás autenticado' });
+}
+const { capitulo, seccion, numero, pregunta, respuesta, parcial} = req.body;
+const usuario = req.session.user.username; // Obtener el usuario de la sesión
+const CUIT = req.session.user.CUIT;
+
+if (!usuario) {
+    return res.status(400).json({ error: 'Usuario no definido en la sesión' });
+}
+
+const respuestaJSON = JSON.stringify(respuesta);   // Convertir el array de respuesta a un string JSON  
+const nuevoParcial = 'INSERT INTO parciales (CUIT, usuario, capitulo, seccion, numero, pregunta, respuesta, parcial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+const datosAPasar = [CUIT, usuario, capitulo, seccion, numero, pregunta, respuestaJSON, parcial];
+
+conexion.query(nuevoParcial, datosAPasar, function (error, lista) {
+    if (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(409).json({ error: 'Ya existe una respuesta para esta combinación de capitulo y seccion' });
+        } else {
+        console.log('Error:', error);
+        res.status(500).json({ error: error.message });
+    }
+    } else {
+        res.status(200).json({ success: true });
+    }
+});
+});
+
+// Ruta para actualizar la tabla capitulos con los totales.:::::::::::::::::::
+app.post('/total-Capitulo', (req, res) => {
+  if (!req.session.user){
+      return res.status(401).json({ error: 'No estás autenticado' });
+  }
+
+  const { capitulo, maximo, score, porcentaje } = req.body;
+  const usuario = req.session.user.username; // Obtener el usuario de la sesión
+  const CUIT = req.session.user.CUIT; // Obtiene el cuit
+
+  if (!usuario) {
+      return res.status(400).json({ error: 'Usuario no definido en la sesión' });
+  }
+
+  const nuevoTotal = 'INSERT INTO totalcapitulos (CUIT, capitulo, maximo, score, porcentaje) VALUES (?, ?, ?, ?, ?)';
+  const datosAPasar = [CUIT, capitulo, maximo, score, porcentaje];
+
+  conexion.query(nuevoTotal, datosAPasar, function (error, lista) {
+      if (error) {
+          if (error.code === 'ER_DUP_ENTRY') {
+              console.log('Ya existe una respuesta para esta combinación de CUIT y Capitulo - sigue normal');                // Manejar el error de duplicación
+          } else {
+          console.log('Error:', error);
+          res.status(500).json({ error: error.message });
+      }
+      } else {
+          // console.log(lista.insertId, lista.fieldCount);
+          res.status(200).json({ success: true });
+      }
+  });
+});
+
+
 
 
 // Ruta protegida que requiere autenticación :::::::::::::::::::::::::::::::::::::::::.
@@ -373,38 +403,6 @@ app.get('/busca-respuesta-capitulo', (req, res) => {
       });
     });
 
-// Ruta para actualizar la tabla capitulos con los totales.:::::::::::::::::::
-app.post('/total-Capitulo', (req, res) => {
-    if (!req.session.user){
-        return res.status(401).json({ error: 'No estás autenticado' });
-    }
-
-    const { capitulo, maximo, score, porcentaje } = req.body;
-    const usuario = req.session.user.username; // Obtener el usuario de la sesión
-    const CUIT = req.session.user.CUIT; // Obtiene el cuit
-
-    if (!usuario) {
-        return res.status(400).json({ error: 'Usuario no definido en la sesión' });
-    }
-
-    const nuevoTotal = 'INSERT INTO totalcapitulos (CUIT, capitulo, maximo, score, porcentaje) VALUES (?, ?, ?, ?, ?)';
-    const datosAPasar = [CUIT, capitulo, maximo, score, porcentaje];
-
-    conexion.query(nuevoTotal, datosAPasar, function (error, lista) {
-        if (error) {
-            if (error.code === 'ER_DUP_ENTRY') {
-                console.log('Ya existe una respuesta para esta combinación de CUIT y Capitulo - sigue normal');                // Manejar el error de duplicación
-            } else {
-            console.log('Error:', error);
-            res.status(500).json({ error: error.message });
-        }
-        } else {
-            // console.log(lista.insertId, lista.fieldCount);
-            res.status(200).json({ success: true });
-        }
-    });
-});
-
 // Ruta para obtener todos las respuestas de la tabla textorespuestas::::::::::::::::::::
 app.get('/textorespuestas', (req, res) => {
   const query = 'SELECT * FROM textorespuestas';
@@ -430,7 +428,6 @@ app.get('/textocheck', (req, res) => {
     res.json(results);
   });
 });
- 
 
 // Ruta para generar y descargar el archivo Excel
 app.get('/descargar-excel', async (req, res) => {
