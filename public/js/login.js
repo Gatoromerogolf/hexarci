@@ -15,21 +15,21 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Login exitoso') {
-            // Guardar el nombre de usuario en localStorage
-            localStorage.setItem('username', username);
+            // Guardar datos en localStorage
+            localStorage.setItem('username', data.user.username);
             localStorage.setItem('ingresado', data.user.ingresado); 
-            
-            // Guardar el nombre y apellido en localStorage
             localStorage.setItem('nombre', data.user.firstName);
             localStorage.setItem('apellido', data.user.lastName);
             localStorage.setItem('CUIT', data.user.CUIT);
+            localStorage.setItem('empresa', data.user.empresa);
             
-            // console.log(`valores guardados: ${data.user.firstName}, ${data.user.lastName}, ${data.user.CUIT}`)
-            // console.log('Valores guardados en localStorage:');
-            // console.log('nombre:', localStorage.getItem('nombre'));
-            // console.log('apellido:', localStorage.getItem('apellido'));
-            // console.log('CUIT:', localStorage.getItem('CUIT'));
-            // Login exitoso, redirige a presentacion.html
+// Para almacenar y recuperar un objeto completo en localStorage:
+// const user = { username: 'john_doe', firstName: 'John', lastName: 'Doe' };
+// localStorage.setItem('user', JSON.stringify(user));
+
+// Recuperar el objeto
+// const storedUser = JSON.parse(localStorage.getItem('user'));
+// console.log(storedUser.username); // "john_doe"
 
             if (data.user.ingresado == 1) {
                 window.location.href = '../src/continuacion.html';

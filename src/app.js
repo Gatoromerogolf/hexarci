@@ -7,6 +7,7 @@ const cors = require('cors');
 const path = require('path');
 const session = require('express-session');
 const routes = require('./routes/index');
+const ExcelJS = require('exceljs')
 
 const app = express();
 
@@ -77,7 +78,7 @@ app.post('/insertar2', (req, res) => {
             res.status(500).json({ error: error.message });
         }
         } else {
-            console.log(lista.insertId, lista.fieldCount);
+            // console.log(lista.insertId, lista.fieldCount);
             res.status(200).json({ success: true });
         }
     });
@@ -134,29 +135,47 @@ app.get('/login', (req, res) => {
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
 
-    // Verificar las credenciales del usuario
     conexion.query('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, results) => {
         if (err) {
             res.status(500).send('Error en la base de datos');
         } else if (results.length > 0) {
             const user = results[0]; // Accede a la primera fila de los resultados
             req.session.user = {
-               username: user.username,
-               firstName: user.Nombre, 
-               lastName: user.Apellido, 
-               CUIT: user.CUIT}; // Guarda el usuario como un objeto en la sesión
-            // res.status(200).send('Login exitoso');
+              id: user.id,
+              username: user.username,
+              firstName: user.Nombre, 
+              lastName: user.Apellido, 
+              empresa: user.Empresa,
+              CUIT: user.CUIT}; // Guarda el usuario como un objeto en la sesión
+
             res.status(200).json({
               message: 'Login exitoso',
               user: {
+                id: user.id,
+                username: user.username,
                 firstName: user.Nombre,
                 lastName: user.Apellido,
+                empresa: user.Empresa,
                 CUIT: user.CUIT,
-                ingresado: user.ingresado } }); 
+                ingresado: user.ingresado } });
+                
+            updateLoginTimestamp(user.id);
+                ; 
         } else {
             res.status(401).send('Credenciales inválidas');
         }
     });
+
+    function updateLoginTimestamp(id) {  // Función para actualizar el timestamp en el login
+      const query = 'UPDATE users SET visita = NOW() WHERE id = ?';
+      conexion.query(query, [id], (error, results) => {
+        if (error) {
+          console.error('Error al actualizar el timestamp:', error);
+        } else {
+          console.log('Timestamp actualizado correctamente para el usuario ID:', id);
+        }
+      });
+    }
 });
 
 /*Explicación:
@@ -170,7 +189,7 @@ De esta manera, puedes utilizar el CUIT en cualquier parte del frontend después
 
 // Ruta para actualizar el campo "ingresado" del usuario:::::::::::::::::::::::::::::::
 app.post('/api/updateIngresado', (req, res) => {
-  const { usuario, CUIT } = req.body;
+  const { username, CUIT } = req.body;
   const query = 'UPDATE users SET ingresado = 1 WHERE username = ? AND CUIT = ?';
 
   conexion.query(query, [username, CUIT], (error, results) => {
@@ -320,7 +339,7 @@ app.get('/busca-respuesta', (req, res) => {
         if (results.length > 0) {
             res.json({ exists: true, record: results[0] });  //devuelve registro completo
           } else {
-            console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
+            // console.log (`no hay respuesta para seccion ${seccion} en busca-respuesta`)
             res.json({ exists: false });
           }
         });
@@ -411,7 +430,72 @@ app.get('/textocheck', (req, res) => {
     res.json(results);
   });
 });
-  
+ 
+
+// Ruta para generar y descargar el archivo Excel
+app.get('/descargar-excel', async (req, res) => {
+  try {
+
+    // Acceder al usuario de la sesión
+    const usuario = req.session.user?.username;
+
+    if (!usuario) {
+      res.status(401).send('Usuario no autenticado');
+      return;
+    }
+
+    // Consulta a la base de datos
+    const query = 'SELECT * FROM parciales WHERE usuario = ?';
+    conexion.query(query, [usuario], async (error, results, fields) => {
+      if (error) {
+        console.error('Error al consultar la base de datos:', error);
+        res.status(500).send('Error al consultar la base de datos');
+        return;
+      }
+
+      // Crear un nuevo libro de trabajo
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Respuestas');
+
+      results = results.map(row => ({
+        ...row,
+        score: parseFloat(row.score),
+        porcentaje: parseFloat(row.porcentaje)
+      }));      
+
+      // Configurar las columnas (esto debería coincidir con la estructura de tu tabla)
+      worksheet.columns = [
+        { header: 'CUIT', key: 'CUIT', width: 20 },
+        { header: 'Usuario', key: 'usuario', width: 25 },
+        { header: 'Cap', key: 'capitulo', width: 5 },
+        { header: 'Sec', key: 'seccion', width: 5 },
+        { header: 'Nro', key: 'numero', width: 5 },
+        { header: 'Afirmación', key: 'pregunta', width: 40 },
+        { header: 'Respta', key: 'respuesta', width: 8 }, // Configura el formato como número
+        { header: 'Score', key: 'parcial', width: 8, style: { numFmt: '0.0' }},
+      ];
+
+      worksheet.addRow([]); // Añade una fila vacía para separar el título
+
+      // Añadir filas
+      worksheet.addRows(results);
+
+      // Configurar los encabezados de respuesta para la descarga
+      res.setHeader('Content-Disposition', 'attachment; filename=Respuestas.xlsx');
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+      // Enviar el archivo Excel
+      await workbook.xlsx.write(res);
+      res.end();
+    });
+  } catch (error) {
+    console.error('Error al generar el archivo Excel:', error);
+    res.status(500).send('Error al generar el archivo Excel');
+  }
+});
+
+
+
 // Captura todas las otras rutas para mostrar un 404 :::::::::::::::::::::::::::::::::
 app.get('*', (req, res) => {
     res.status(404).send('Page Not Found');

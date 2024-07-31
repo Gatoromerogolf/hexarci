@@ -360,7 +360,7 @@ h5 {
 }
 
 #boton-enviar:hover {
-  background-color: #45a049; /* Color de fondo al pasar el mouse */
+  background-color: #0d8313; /* Color de fondo al pasar el mouse */
 }
 
 #boton-enviar:focus {
@@ -371,14 +371,14 @@ h5 {
 /* -----------BOTON BORRAR ------------------------*/
 
 #boton-borrar {
-    background-color: #fe0314; /* Color de fondo */
+    background-color: #fa727b; /* Color de fondo */
     color: white; /* Color de texto */
-    padding: 12px 24px; /* Espaciado alrededor del texto */
+    padding: 12px 18px; /* Espaciado alrededor del texto */
     border: none; /* Sin bordes */
     border-radius: 4px; /* Bordes redondeados */
     cursor: pointer; /* Cursor en forma de mano al pasar el mouse */
     transition: all 0.3s; /* Transición suave para los cambios */
-    font-size: 16px; /* Tamaño de la fuente */
+    font-size: 15px; /* Tamaño de la fuente */
     font-weight: bold; /* Negrita */
   }
   
@@ -400,7 +400,7 @@ h5 {
   /* -----------BOTON SALIR ------------------------*/
 
   #boton-salir {
-    background-color: #f558b9; /* Color de fondo */
+    background-color: #7c805a; /* Color de fondo */
     color: white; /* Color de texto */
     padding: 5px 30px 5px; /* Espaciado alrededor del texto */
     border: none; /* Sin bordes */
@@ -413,7 +413,7 @@ h5 {
   }
   
   #boton-salir:hover {
-    background-color: #8d8886; /* Color de fondo al pasar el mouse */
+    background-color: #f77b4a; /* Color de fondo al pasar el mouse */
   }
   
   #boton-salir:focus {

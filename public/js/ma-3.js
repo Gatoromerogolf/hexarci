@@ -7,6 +7,7 @@ let puntajesIndividuales = [];
 let filasFaltantes = [];
 const maximo = 310;
 
+let isExiting = false;
 // Crear un array para almacenar los IDs de los checkboxes seleccionados
 let checkboxesSeleccionados = [];
 
@@ -95,6 +96,10 @@ function calculaResultados() {
 document
   .getElementById("formulario")
   .addEventListener("submit", function (event) {
+    if (isExiting) {      // Verifica si está para salir y evita la validación en ese caso
+      isExiting = false;  // Reinicia el indicador  para futuras operaciones
+      return;   // Omite la validación cuando se está intentando salir
+    }
     valores = 0;
     event.preventDefault(); // Prevenir el envío del formulario
 

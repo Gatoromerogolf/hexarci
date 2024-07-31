@@ -9,6 +9,7 @@ let maximo = 160;
 if (JSON.parse(localStorage.getItem('3o4Direct')) == 1) {
       maximo =+ 10;
 }
+let isExiting = false;
 
 // Crear un array para almacenar los IDs de los checkboxes seleccionados
 let checkboxesSeleccionados = [];
@@ -108,6 +109,10 @@ function calculaResultados() {
 document
   .getElementById("formulario")
   .addEventListener("submit", function (event) {
+    if (isExiting) {      // Verifica si está para salir y evita la validación en ese caso
+      isExiting = false;  // Reinicia el indicador  para futuras operaciones
+      return;   // Omite la validación cuando se está intentando salir
+    }
     valores = 0;
     event.preventDefault(); // Prevenir el envío del formulario
 

@@ -86,13 +86,9 @@ function calculaResultados() {
 document
   .getElementById("formulario")
   .addEventListener("submit", function (event) {
-    // Verifica si el usuario está en proceso de salir y evita la validación en ese caso
-    if (isExiting) {
-      // Reinicia el indicador de salida para futuras operaciones
-      isExiting = false;
-
-      // Omite la validación cuando se está intentando salir
-      return;
+    if (isExiting) {      // Verifica si está para salir y evita la validación en ese caso
+      isExiting = false;  // Reinicia el indicador  para futuras operaciones
+      return;   // Omite la validación cuando se está intentando salir
     }
     valores = 0;
     event.preventDefault(); // Prevenir el envío del formulario
@@ -140,7 +136,7 @@ function limpiarSelecciones() {
   });
 }
 
-// :::::::::::::::::::::::
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function mostrarMiAlerta(maximo, valores, porcientoFormateado) {
   // Mostrar la alerta personalizada
@@ -161,7 +157,7 @@ function mostrarMiAlerta(maximo, valores, porcientoFormateado) {
     "<strong>" + porcientoFormateado + "%<strong>";
 }
 
-// ::::::::::::::::::::::::
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function cerrarAlerta() {
   // alert("entro en cerrarAlerta");
@@ -182,6 +178,8 @@ function cerrarAlerta() {
 //   alert("ahora llama al menu-a")
 //   window.location.href = (JSON.parse(localStorage.getItem('idioma'))) == 1 ? "Menu-A.html" : "Menu-A-en.html"
 // }
+
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function continuar() {
   cerrarAlerta(); // Opcional, depende de si quieres cerrar la alerta antes de cambiar la página

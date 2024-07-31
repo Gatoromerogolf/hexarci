@@ -5,7 +5,7 @@ let maximo = 50; // 1 x 10 +  3 x 5
 let porcientoFormateado = 0;
 let puntajesIndividuales = [];
 let filasFaltantes = [];
-
+let isExiting = false;
 let checkboxesSeleccionados = [];
 
 // OBTIENE LOS VALORES DE RADIO ::::::::::::::::::::::::::::::
@@ -78,6 +78,10 @@ document
 // Captura del formulario :::::::::::::::::::::::::::::::::::::
   .getElementById("formulario")
   .addEventListener("submit", function (event) {
+    if (isExiting) {      // Verifica si está para salir y evita la validación en ese caso
+      isExiting = false;  // Reinicia el indicador  para futuras operaciones
+      return;   // Omite la validación cuando se está intentando salir
+    }
     valores = 0;
     event.preventDefault(); // Prevenir el envío del formulario
 

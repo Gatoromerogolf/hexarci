@@ -301,33 +301,6 @@ document
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // limpiarSelecciones :::::::::::::::::::::::::::::::::
 
 function limpiarSelecciones() {
@@ -392,9 +365,9 @@ function continuar() {
 
   grabarResultados2(respuestas)
     .then(() => {
-      const usuario =localStorage.getItem('username') // Obtener username
+      const username =localStorage.getItem('username') // Obtener username
       const CUIT = localStorage.getItem('CUIT');
-      actualizaUserIngreso(usuario, CUIT)
+      actualizaUserIngreso(username, CUIT)
       window.location.href =
         JSON.parse(localStorage.getItem("idioma")) == 1
           ? "MA-2.html"
@@ -450,13 +423,13 @@ async function grabarResultados2(respuestas) {
 
 
 // Función para actualizar el campo ingresado del usuario
-function actualizaUserIngreso(usuario, CUIT) {
+function actualizaUserIngreso(username, CUIT) {
   fetch('/api/updateIngresado', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ usuario , CUIT })
+      body: JSON.stringify({ username , CUIT })
   })
   .then(response => response.json())
   .then(data => {
