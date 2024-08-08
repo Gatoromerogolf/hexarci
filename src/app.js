@@ -8,6 +8,7 @@ const path = require('path');
 const session = require('express-session');
 const routes = require('./routes/index');
 const ExcelJS = require('exceljs')
+const cron = require('node-cron');
 
 const app = express();
 
@@ -64,6 +65,23 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/login.html'));
 });
 
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// Definir la tarea cron
+// cron.schedule('0 */4 * * *', () => { cada cuatro horas
+cron.schedule('*/30 * * * *', () => { // cada treinta minutos
+  console.log('Ejecutando tarea programada: registrando en la base de datos');
+
+  const query = 'INSERT INTO tablalogs (logs) VALUES (NOW())';
+
+  conexion.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al insertar en la base de datos:', err);
+      return;
+    }
+    console.log('Registro insertado correctamente:', results);
+  });
+});
 
 // Endpoint para validar credenciales :::::::::::::::::::::::::::::::::::::::::::::::::::
 app.post('/api/login', (req, res) => {
@@ -94,7 +112,6 @@ app.post('/api/login', (req, res) => {
                 ingresado: user.ingresado } });
                 
             updateLoginTimestamp(user.id);
-                ; 
         } else {
             res.status(401).send('Credenciales inválidas');
         }
@@ -323,7 +340,6 @@ app.get('/leeListaPrecios', (req, res) => {
 // Ruta para obtener todos las respuestas de la tabla ::::::::::::::::::::
 app.get('/respuestas', (req, res) => {
     const query = 'SELECT * FROM respuestas';
-  
     conexion.query(query, (error, results, fields) => {
       if (error) {
         res.status(500).json({ error: 'Error al obtener los registros' });

@@ -16,26 +16,60 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
   <!-- <script src="../js/chart.js"></script> Tu archivo que contiene el código del gráfico -->
+
+  <style>
+    .loading {
+        display: none;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    .loading-bars {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px auto;
+    }
+
+    .bar {
+        width: 10px;
+        height: 40px;
+        background-color: #3498db;
+        margin: 0 5px;
+        animation: stretch 1.2s infinite ease-in-out;
+    }
+
+    .bar:nth-child(1) {
+        animation-delay: -1.2s;
+    }
+
+    .bar:nth-child(2) {
+        animation-delay: -1.1s;
+    }
+
+    .bar:nth-child(3) {
+        animation-delay: -1s;
+    }
+
+    .bar:nth-child(4) {
+        animation-delay: -0.9s;
+    }
+
+    @keyframes stretch {
+        0%, 40%, 100% {
+            transform: scaleY(0.4);
+        }
+        20% {
+            transform: scaleY(1);
+        }
+    }
+</style>
+
 </head>
 
 <body>
   <div class="survey-container">
     <form id="survey-form">
-      <!-- <div class="containerTitulo">
-        <div class="left-icon">
-          <a href="../../index.html">
-            <img src="../img/contenido (1).png" width="30px">
-          </a>
-        </div>
-        <div class="logo">
-          <img src="../img/molinos.png" width="150px">
-        </div>
-        <div class="right-icons">
-          <a href="Menu-General.html" id="spainIcon">
-            <img src="../img/espana.png" width="25px">
-          </a>
-        </div>
-      </div> -->
 
       <div class="header-titulo">
         <img src="../img/contenido (1).png" alt="Logo Izquierda" class="logo left">
@@ -49,10 +83,21 @@
       <!-- <h1>Bienvenido, <span id="username"></span>!</h1> -->
       <h3>Autoevaluación de la calidad del manejo de la empresa</h3>
       <div class="contenedorTabla">
-        <table id="tablaIndiceCapitulos">
+
+        <div id="loading" class="loading" style="display: block;">
+          <div class="loading-bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          Cargando...
+        </div>
+        
+        <table id="tablaIndiceCapitulos" style="display: none;">
           <tr>
             <th>#</th>
-            <th style="width: 350px;">Capítulo</th>
+            <th style="width: 350px;">Factor</th>
             <th style="width: 65px;">Máx</th>
             <th style="width: 65px;">Calif</th>
             <th style="width: 40px;">%</th>
@@ -69,6 +114,20 @@
     localStorage.setItem('idioma', '1');
   </script>
 
+<script>
+  // Simulación de una función que carga datos
+  function loadData() {
+      document.getElementById('loading').style.display = 'block';
+      setTimeout(function() {
+          // Aquí iría tu lógica para cargar y mostrar los datos
+          document.getElementById('tablaIndiceCapitulos').style.display = 'table';
+          document.getElementById('loading').style.display = 'none';
+      }, 3000); // Simulación de 3 segundos de tiempo de carga
+  }
+
+  // Iniciar la carga de datos
+  loadData();
+</script>
 <!-- <script>
     // Agrega un evento de clic al ícono de España
     document.getElementById('spainIcon').addEventListener('click', function () {

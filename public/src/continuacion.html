@@ -7,7 +7,7 @@
   <title>Evaluación de riesgos</title>
   <!-- <link href="../estilos/st-homePrueba.css" rel="stylesheet"> -->
   <!-- <link href="css/st-gobCorpo.css" rel="stylesheet"> -->
-  <link href="../estilos/estiloEncuestas.css" rel="stylesheet">
+  <link href="../estilos/estiloMenuGeneral.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
@@ -16,26 +16,16 @@
 
   <div class="survey-container" style="max-width: 600px;">
 
-    <form id="survey-form">
-      <div class="containerTitulo">
-        <div class="left-icon">
-          <a href="../../index.html">
-            <img src="../img/contenido (1).png" width="30px">
-          </a>
-        </div>
-        <div class="right-icons">
-          <a href="Menu-General.html" id="spainIcon">
-            <img src="../img/espana.png" width="25px">
-          </a>
-          <!-- <a href="Menu-General-en.html" id="usaIcon">
-            <img src="../img/usa.png" width="25px">
-          </a> -->
-        </div>
+    <div class="header-titulo">
+      <img src="../img/contenido (1).png" alt="Logo Izquierda" class="logo left">
+      <div class="header-center">
+        <div id="nombreEmpresa" class="company-name"></div>
+        <div id="nombreUsuario" class="user-name"></div>
       </div>
+      <img src="../img/espana.png" alt="Logo Derecha" class="logo right">
+    </div>
 
       <h2>Bienvenido</h2>
-
-      
 
       <p>Podrá continuar con el proceso de autoevaluación.</p>
       <p>La aplicación le habilitará el ingreso de información a partir del último capitulo y sección que haya completado.</p>
@@ -44,7 +34,14 @@
         visión integral de la posición de la empresa frente al desafío de la gestión de riesgos.</p>
 
       <div class="centrado-flex">
-        <button id="boton-enviar" type="button">CONTINUAR</button>
+        <button class="botonSiguiente" id="boton-enviar" type="button">CONTINUAR</button>
+      <!-- Nuevo botón para invocar la aplicación en Python -->
+      <button class="botonSiguiente" id="boton-invocar" type="button">Invocar Python</button>
+
+    <!-- Elemento para mostrar el mensaje del servidor Python -->
+    <div id="mensaje-python" style="margin-top: 20px;"></div>
+
+    
       </div>
     </form>
   </div>
@@ -59,12 +56,31 @@
       window.location.href = "Menu-General.html";
     }
   });
-</script>
 
-<script>
+
+  document.getElementById("boton-invocar").addEventListener('click', () => {
+      fetch('http://localhost:5000/invocar')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('mensaje-python').innerText = data;
+        })
+        .catch(error => {
+          document.getElementById('mensaje-python').innerText = 'Error: ' + error;
+          console.error('Error:', error);
+        });
+    });
+
       localStorage.setItem('idioma', '1');
-</script>
 
+  const apellidouser = localStorage.getItem("apellido");
+  const nombreUser = localStorage.getItem("nombre");
+  const apenom = nombreUser + ' ' + apellidouser;
+  const empresa = localStorage.getItem("empresa");
+
+  document.getElementById("nombreEmpresa").textContent = empresa;
+  document.getElementById("nombreUsuario").textContent = apenom;
+
+</script>
 <!-- <script>
   // Agrega un evento de clic al ícono de España
   document.getElementById('spainIcon').addEventListener('click', function () {

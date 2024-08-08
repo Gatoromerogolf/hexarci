@@ -37,7 +37,6 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
                 window.location.href = '../src/Presentacion.html';
             }
         } else {
-            // Mostrar mensaje de error si las credenciales son inválidas
             console.error('Credenciales inválidas');
         }
     })
